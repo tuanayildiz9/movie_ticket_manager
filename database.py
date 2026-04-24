@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Session, create_engine
 
-DATABASE_URL = "sqlite:///my_app.db"
+DATABASE_URL = "sqlite:///movie_ticket_manager.db"
 
 engine = create_engine(DATABASE_URL, echo=False)
 

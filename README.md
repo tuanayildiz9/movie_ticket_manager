@@ -1,16 +1,18 @@
 # Movie Ticket Manager
-Für unser objektorientiertes Programmierprojekt haben wir uns für einen Movie Ticket Manger entschieden. In diesem Programm können die Kunden Kinotickets bequem im Voraus kaufen. Gleichzeitig werden die Mitarbeitenden des Kinos entlastet, da der Grossteil der Tickets online gekauft wird.
+Für unser objektorientiertes Programmierprojekt haben wir uns für einen Movie Ticket Manager entschieden. Ziel des Projekts ist die Entwicklung einer benutzerfreundlichen Webanwendung, mit der Kinotickets bequem online im Voraus gekauft werden können. Dadurch sollen Wartezeiten an der Kinokasse reduziert und die Mitarbeitenden des Kinos entlastet werden.
+
+Die Anwendung richtet sich sowohl an Kinobesucher (Kunden) als auch an Mitarbeitende des Kinos (Admin). Sie wird als browserbasierte Webanwendung mit Frontend, Backend und Datenbank umgesetzt.
 
 ### Szenario
-Im Movie Ticket Manager können die Kundinnen…:
+Im Movie Ticket Manager können die Kunden:
 - aktuelle Filme einsehen
 - ein Kundenkonto anlegen
-- mehrere Tickets kaufen (inkl. Sitzplatzauswahl, Studentenrabatt)
-- beim Kauf eines Tickets Snacks auswählen
-- die Suche der Filme mit Filtern verfeinern (Sprache, Altersfreigabe usw.)
-- die Filme bewerten
+- mehrere Tickets kaufen (inkl. Sitzplatzauswahl und Rabatten)
+- das Filmangebot filtern (z.B. Sprache, Altersfreigabe)
+- Filme bewerten
+- Filme in ihrer persönlichen Liste speichern
 
-Im Movie Ticket Manager können Admins...:
+Im Movie Ticket Manager können Admins:
 - Filme hinzufügen, bearbeiten und löschen
 - Vorstellungen mit Datum, Uhrzeit und Saal verwalten
 - Admins können einsehen, wie viele Tickets pro Film verkauft wurden und welche Sitzplätze belegt sind

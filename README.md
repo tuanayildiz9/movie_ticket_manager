@@ -176,8 +176,6 @@ Nach jedem Ticketkauf erhält der Kunde automatisch eine Bestellübersicht mit f
 
 ---
 
-## Inputs
-
 ### Erwartetes Format
 | Output | Beschreibung | Format | Empfänger |
 |---|---|---|---|

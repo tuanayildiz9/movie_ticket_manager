@@ -176,7 +176,7 @@ Nach jedem Ticketkauf erhält der Kunde automatisch eine Bestellübersicht mit f
 
 ---
 
-### Erwartetes Format
+## Erwartetes Format
 | Output | Beschreibung | Format | Empfänger |
 |---|---|---|---|
 | Bestellübersicht | Zusammenfassung nach Ticketkauf (Filmtitel, Saal, Sitzplatz, Datum, Uhrzeit, Anzahl Tickets, Gesamtpreis) | Webseite | Kunde |

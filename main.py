@@ -20,7 +20,7 @@ def build_application() -> tuple[UserService, FilmService, BestellungService, Ad
 	bewertung_repo = BewertungRepository()
 	snack_repo = SnackRepository()
 
-	film_service = FilmService(film_repo=film_repo, bewertung_repo=bewertung_repo)
+	film_service = FilmService(film_repo=film_repo, bewertung_repo=bewertung_repo, user_repo=user_repo)
 	user_service = UserService(user_repo=user_repo)
 	bestellung_service = BestellungService(
 		bestellung_repo=bestellung_repo,

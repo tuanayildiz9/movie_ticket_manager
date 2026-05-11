@@ -5,12 +5,19 @@ from backend.models import Bewertung, Film
 
 from backend.repositories.bewertung_repository import BewertungRepository
 from backend.repositories.film_repository import FilmRepository
+from backend.repositories.user_repository import UserRepository
 
 
 class FilmService:
-    def __init__(self, film_repo: FilmRepository, bewertung_repo: BewertungRepository) -> None:
+    def __init__(
+        self,
+        film_repo: FilmRepository,
+        bewertung_repo: BewertungRepository,
+        user_repo: UserRepository | None = None,
+    ) -> None:
         self.film_repo = film_repo
         self.bewertung_repo = bewertung_repo
+        self.user_repo = user_repo
 
     def list_current_films(
         self,
@@ -18,13 +25,28 @@ class FilmService:
         sort: str | None = None,
         page: int = 1,
         size: int = 10,
-    ) -> list[Film]:
-        return self.film_repo.find(filter_data=filter_data, sort=sort, page=page, size=size)
+        summaries: bool = False,
+    ) -> list[Film] | list[dict[str, object]]:
+        films = self.film_repo.list_current(filter_data=filter_data, sort=sort, page=page, size=size)
+        if summaries:
+            return [
+                {
+                    "film_id": film.film_id,
+                    "titel": film.titel,
+                    "coverbild_url": film.coverbild_url,
+                    "basispreis": film.basispreis,
+                    "altersfreigabe": film.altersfreigabe,
+                }
+                for film in films
+            ]
+        return films
 
     def get_film_details(self, film_id: UUID) -> Film | None:
         return self.film_repo.get_by_id(film_id)
 
     def rate_film(self, kunde_id: UUID, film_id: UUID, score: int, comment: str) -> Bewertung:
+        if self.user_repo is not None and self.user_repo.get_by_id(kunde_id) is None:
+            raise ValueError("Kunde wurde nicht gefunden.")
         if self.film_repo.get_by_id(film_id) is None:
             raise ValueError("Film wurde nicht gefunden.")
         bewertung = Bewertung(kunde_id=kunde_id, film_id=film_id, bewertung=score, kommentar=comment)

@@ -97,6 +97,37 @@ class FilmRepository:
         start = max(page - 1, 0) * size
         return films[start:start + size]
 
+    def list_current(
+        self,
+        filter_data: dict[str, object] | None = None,
+        sort: str | None = None,
+        page: int = 1,
+        size: int = 10,
+    ) -> list[Film]:
+        """Return only currently available films (activated and released)."""
+        filter_data = filter_data or {}
+
+        # start from all films and apply same filter logic as `find`, plus availability
+        films = self.list_all()
+        films = [film for film in films if film.is_available()]
+        films = [
+            film
+            for film in films
+            if film.matches_filters(
+                search_term=filter_data.get("search_term") if isinstance(filter_data.get("search_term"), str) else None,
+                sprache_id=filter_data.get("sprache_id") if isinstance(filter_data.get("sprache_id"), UUID) else None,
+                kategorie_id=filter_data.get("kategorie_id") if isinstance(filter_data.get("kategorie_id"), UUID) else None,
+                max_altersfreigabe=filter_data.get("max_altersfreigabe") if isinstance(filter_data.get("max_altersfreigabe"), int) else None,
+            )
+        ]
+        if sort:
+            reverse = sort.startswith("-")
+            sort_field = sort[1:] if reverse else sort
+            films.sort(key=lambda film: getattr(film, sort_field, None), reverse=reverse)
+
+        start = max(page - 1, 0) * size
+        return films[start : start + size]
+
     def _sync_film_relations(self, session: Session, film: Film) -> None:
         for link in session.exec(select(FilmSprache).where(FilmSprache.film_id == film.film_id)).all():
             session.delete(link)

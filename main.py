@@ -1,9 +1,10 @@
 from backend.repositories import (
+	AccountRepository,
 	BestellungRepository,
 	BewertungRepository,
 	FilmRepository,
+	KundeRepository,
 	SnackRepository,
-	UserRepository,
 )
 from backend.services import AdminService, BestellungService, FilmService, UserService
 from backend.seed import seed_database
@@ -14,18 +15,19 @@ def build_application() -> tuple[UserService, FilmService, BestellungService, Ad
 	# ensure DB and tables exist
 	create_db_and_tables()
 
-	user_repo = UserRepository()
+	account_repo = AccountRepository()
+	kunde_repo = KundeRepository()
 	film_repo = FilmRepository()
 	bestellung_repo = BestellungRepository()
 	bewertung_repo = BewertungRepository()
 	snack_repo = SnackRepository()
 
-	film_service = FilmService(film_repo=film_repo, bewertung_repo=bewertung_repo, user_repo=user_repo)
-	user_service = UserService(user_repo=user_repo)
+	film_service = FilmService(film_repo=film_repo, bewertung_repo=bewertung_repo, kunde_repo=kunde_repo)
+	user_service = UserService(account_repo=account_repo, kunde_repo=kunde_repo)
 	bestellung_service = BestellungService(
 		bestellung_repo=bestellung_repo,
 		film_repo=film_repo,
-		user_repo=user_repo,
+		kunde_repo=kunde_repo,
 		snack_repo=snack_repo,
 	)
 	admin_service = AdminService(film_repo=film_repo, bestellung_repo=bestellung_repo)

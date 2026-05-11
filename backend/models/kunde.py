@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from datetime import date
-from hashlib import sha256
 from uuid import UUID, uuid4
 
 from .zahlungsart import Zahlungsart
@@ -9,14 +8,13 @@ from .zahlungsart import Zahlungsart
 @dataclass
 class Kunde:
     kunde_id: UUID = field(default_factory=uuid4)
+    account_id: UUID = field(default_factory=uuid4)
     vorname: str = ""
     nachname: str = ""
     adresse: str = ""
     plz: str = ""
     geburtsdatum: date = field(default_factory=date.today)
     telefonnummer: str = ""
-    email: str = ""
-    passwort_hash: str = ""
     zahlungsart: Zahlungsart | None = None
     gespeicherte_filme: list[UUID] = field(default_factory=list)
     kategorien_praeferenzen: list[UUID] = field(default_factory=list)
@@ -32,12 +30,6 @@ class Kunde:
             self.geburtsdatum.day,
         )
         return years - int(before_birthday)
-
-    def set_password(self, plain_password: str) -> None:
-        self.passwort_hash = sha256(plain_password.encode("utf-8")).hexdigest()
-
-    def check_password(self, plain_password: str) -> bool:
-        return self.passwort_hash == sha256(plain_password.encode("utf-8")).hexdigest()
 
     def can_purchase(self, min_age: int = 0) -> bool:
         return self.age() >= min_age
@@ -56,9 +48,6 @@ class Kunde:
 
     def update_profile(self, data: dict[str, object]) -> None:
         for key, value in data.items():
-            if key == "passwort":
-                self.set_password(str(value))
-                continue
             if key == "zahlungsart":
                 if isinstance(value, Zahlungsart):
                     self.zahlungsart = value

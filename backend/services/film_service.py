@@ -5,7 +5,7 @@ from backend.models import Bewertung, Film
 
 from backend.repositories.bewertung_repository import BewertungRepository
 from backend.repositories.film_repository import FilmRepository
-from backend.repositories.user_repository import UserRepository
+from backend.repositories.kunde_repository import KundeRepository
 
 
 class FilmService:
@@ -13,11 +13,11 @@ class FilmService:
         self,
         film_repo: FilmRepository,
         bewertung_repo: BewertungRepository,
-        user_repo: UserRepository | None = None,
+        kunde_repo: KundeRepository | None = None,
     ) -> None:
         self.film_repo = film_repo
         self.bewertung_repo = bewertung_repo
-        self.user_repo = user_repo
+        self.kunde_repo = kunde_repo
 
     def list_current_films(
         self,
@@ -45,7 +45,7 @@ class FilmService:
         return self.film_repo.get_by_id(film_id)
 
     def rate_film(self, kunde_id: UUID, film_id: UUID, score: int, comment: str) -> Bewertung:
-        if self.user_repo is not None and self.user_repo.get_by_id(kunde_id) is None:
+        if self.kunde_repo is not None and self.kunde_repo.get_by_id(kunde_id) is None:
             raise ValueError("Kunde wurde nicht gefunden.")
         if self.film_repo.get_by_id(film_id) is None:
             raise ValueError("Film wurde nicht gefunden.")

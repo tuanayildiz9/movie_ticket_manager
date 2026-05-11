@@ -1,3 +1,4 @@
+from .account import Account
 from .bewertung import Bewertung
 from .bestellung import Bestellung
 from .common import to_decimal
@@ -20,6 +21,7 @@ from .zahlungsart import Zahlungsart
 __all__ = [
     "Bewertung",
     "Bestellung",
+    "Account",
     "Film",
     "FilmKategorie",
     "FilmSprache",

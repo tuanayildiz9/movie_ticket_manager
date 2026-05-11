@@ -1,3 +1,4 @@
+from .account_sql import Account
 from .bewertung_sql import Bewertung
 from .bestellung_sql import Bestellung
 from .film_kategorie_sql import FilmKategorie
@@ -18,6 +19,7 @@ from .zahlungsart_sql import Zahlungsart
 __all__ = [
     "Bewertung",
     "Bestellung",
+    "Account",
     "FilmKategorie",
     "FilmSprache",
     "Film",

@@ -6,7 +6,7 @@ from backend.models import Bestellung, Ticket, TicketSnack, Verguensigungsart
 from backend.repositories.bestellung_repository import BestellungRepository
 from backend.repositories.film_repository import FilmRepository
 from backend.repositories.snack_repository import SnackRepository
-from backend.repositories.user_repository import UserRepository
+from backend.repositories.kunde_repository import KundeRepository
 
 
 class BestellungService:
@@ -14,12 +14,12 @@ class BestellungService:
         self,
         bestellung_repo: BestellungRepository,
         film_repo: FilmRepository,
-        user_repo: UserRepository,
+        kunde_repo: KundeRepository,
         snack_repo: SnackRepository,
     ) -> None:
         self.bestellung_repo = bestellung_repo
         self.film_repo = film_repo
-        self.user_repo = user_repo
+        self.kunde_repo = kunde_repo
         self.snack_repo = snack_repo
 
     def create_order(
@@ -29,7 +29,7 @@ class BestellungService:
         snacks: list[dict[str, object]] | None = None,
         payment: dict[str, object] | None = None,
     ) -> Bestellung:
-        kunde = self.user_repo.get_by_id(kunde_id)
+        kunde = self.kunde_repo.get_by_id(kunde_id)
         if kunde is None:
             raise ValueError("Kunde wurde nicht gefunden.")
 

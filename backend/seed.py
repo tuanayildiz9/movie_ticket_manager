@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta
 from decimal import Decimal
+from hashlib import sha256
 
 from sqlmodel import Session, select
 
 from backend.models.orm import (
+    Account,
     Bestellung,
     Bewertung,
     FilmKategorie,
@@ -57,7 +59,7 @@ CUSTOMERS = [
         "geburtsdatum": date(1995, 4, 12),
         "telefonnummer": "+41 79 111 22 33",
         "email": "anna.muster@example.com",
-        "passwort_hash": "demo-hash-anna",
+        "passwort": "anna123",
         "zahlungsart_name": "Twint",
     },
     {
@@ -68,10 +70,22 @@ CUSTOMERS = [
         "geburtsdatum": date(1988, 10, 3),
         "telefonnummer": "+41 79 444 55 66",
         "email": "lukas.beispiel@example.com",
-        "passwort_hash": "demo-hash-lukas",
+        "passwort": "lukas123",
         "zahlungsart_name": "Kreditkarte",
     },
 ]
+
+ADMIN_ACCOUNT = {
+    "vorname": "System",
+    "nachname": "Admin",
+    "adresse": "",
+    "plz": "",
+    "geburtsdatum": date(1990, 1, 1),
+    "telefonnummer": "",
+    "email": "admin@example.com",
+    "passwort": "admin123",
+    "rolle": "admin",
+}
 
 FILMS = [
     {
@@ -103,7 +117,10 @@ def seed_database() -> None:
     create_db_and_tables()
 
     with Session(engine) as session:
+        _create_admin_account(session)
+
         if session.exec(select(Film)).first():
+            session.commit()
             return
 
         zahlungsarten = _create_payment_methods(session)
@@ -150,19 +167,38 @@ def _create_snacks(session: Session) -> list[Snack]:
     return rows
 
 
+def _create_admin_account(session: Session) -> Account:
+    existing = session.exec(select(Account).where(Account.email == ADMIN_ACCOUNT["email"])).first()
+    if existing is not None:
+        return existing
+
+    row = Account(
+        email=ADMIN_ACCOUNT["email"],
+        rolle=ADMIN_ACCOUNT["rolle"],
+    )
+    row.set_password(ADMIN_ACCOUNT["passwort"])
+    session.add(row)
+    session.flush()
+    return row
+
+
 def _create_customers(session: Session, zahlungsarten: list[Zahlungsart]) -> list[Kunde]:
     zahlungsart_map = {row.name: row for row in zahlungsarten}
     rows: list[Kunde] = []
     for item in CUSTOMERS:
+        account = Account(email=item["email"], rolle="kunde")
+        account.set_password(item["passwort"])
+        session.add(account)
+        session.flush()
+
         row = Kunde(
+            account_id=account.account_id,
             vorname=item["vorname"],
             nachname=item["nachname"],
             adresse=item["adresse"],
             plz=item["plz"],
             geburtsdatum=item["geburtsdatum"],
             telefonnummer=item["telefonnummer"],
-            email=item["email"],
-            passwort_hash=item["passwort_hash"],
             zahlungsart_id=zahlungsart_map[item["zahlungsart_name"]].zahlungsart_id,
         )
         rows.append(row)

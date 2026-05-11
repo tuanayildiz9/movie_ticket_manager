@@ -3,11 +3,11 @@ from uuid import UUID
 
 from backend.models import Kunde, Zahlungsart
 
-from backend.repositories.user_repository_interface import IUserRepository
+from backend.repositories.user_repository import UserRepository
 
 
 class UserService:
-    def __init__(self, user_repo: IUserRepository) -> None:
+    def __init__(self, user_repo: UserRepository) -> None:
         self.user_repo = user_repo
 
     def register(self, data: dict[str, object]) -> Kunde:

@@ -7,10 +7,7 @@ from backend.models import Bewertung
 from backend.models.orm.bewertung_sql import Bewertung as BewertungORM
 from config.database import engine
 
-from .bewertung_repository_interface import IBewertungRepository
-
-
-class BewertungRepository(IBewertungRepository):
+class BewertungRepository:
     def _to_domain(self, row: BewertungORM) -> Bewertung:
         return Bewertung(
             bewertung_id=row.bewertung_id,

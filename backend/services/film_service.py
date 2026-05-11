@@ -3,12 +3,12 @@ from uuid import UUID
 
 from backend.models import Bewertung, Film
 
-from backend.repositories.bewertung_repository_interface import IBewertungRepository
-from backend.repositories.film_repository_interface import IFilmRepository
+from backend.repositories.bewertung_repository import BewertungRepository
+from backend.repositories.film_repository import FilmRepository
 
 
 class FilmService:
-    def __init__(self, film_repo: IFilmRepository, bewertung_repo: IBewertungRepository) -> None:
+    def __init__(self, film_repo: FilmRepository, bewertung_repo: BewertungRepository) -> None:
         self.film_repo = film_repo
         self.bewertung_repo = bewertung_repo
 

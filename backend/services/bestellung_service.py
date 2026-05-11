@@ -3,19 +3,19 @@ from uuid import UUID
 
 from backend.models import Bestellung, Ticket, TicketSnack, Verguensigungsart
 
-from backend.repositories.bestellung_repository_interface import IBestellungRepository
-from backend.repositories.film_repository_interface import IFilmRepository
-from backend.repositories.snack_repository_interface import ISnackRepository
-from backend.repositories.user_repository_interface import IUserRepository
+from backend.repositories.bestellung_repository import BestellungRepository
+from backend.repositories.film_repository import FilmRepository
+from backend.repositories.snack_repository import SnackRepository
+from backend.repositories.user_repository import UserRepository
 
 
 class BestellungService:
     def __init__(
         self,
-        bestellung_repo: IBestellungRepository,
-        film_repo: IFilmRepository,
-        user_repo: IUserRepository,
-        snack_repo: ISnackRepository,
+        bestellung_repo: BestellungRepository,
+        film_repo: FilmRepository,
+        user_repo: UserRepository,
+        snack_repo: SnackRepository,
     ) -> None:
         self.bestellung_repo = bestellung_repo
         self.film_repo = film_repo

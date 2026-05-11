@@ -10,10 +10,7 @@ from backend.models.orm.kunden_kategorie_praeferenz_sql import KundenKategoriePr
 from backend.models.orm.zahlungsart_sql import Zahlungsart as ZahlungsartORM
 from config.database import engine
 
-from .user_repository_interface import IUserRepository
-
-
-class UserRepository(IUserRepository):
+class UserRepository:
     def _to_domain(self, session: Session, row: KundeORM) -> Kunde:
         zahlungsart = None
         if row.zahlungsart_id is not None:

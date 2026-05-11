@@ -15,10 +15,7 @@ from backend.models.orm.sprache_sql import Sprache
 from backend.models.orm.vorstellung_sql import Vorstellung as VorstellungORM
 from config.database import engine
 
-from .film_repository_interface import IFilmRepository
-
-
-class FilmRepository(IFilmRepository):
+class FilmRepository:
     def _to_domain(self, session: Session, row: FilmORM) -> Film:
         film = Film(
             film_id=row.film_id,

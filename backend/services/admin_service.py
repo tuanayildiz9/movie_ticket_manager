@@ -1,11 +1,11 @@
 from uuid import UUID
 
-from backend.repositories.bestellung_repository_interface import IBestellungRepository
-from backend.repositories.film_repository_interface import IFilmRepository
+from backend.repositories.bestellung_repository import BestellungRepository
+from backend.repositories.film_repository import FilmRepository
 
 
 class AdminService:
-    def __init__(self, film_repo: IFilmRepository, bestellung_repo: IBestellungRepository) -> None:
+    def __init__(self, film_repo: FilmRepository, bestellung_repo: BestellungRepository) -> None:
         self.film_repo = film_repo
         self.bestellung_repo = bestellung_repo
 

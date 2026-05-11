@@ -7,10 +7,7 @@ from backend.models import Snack
 from backend.models.orm.snack_sql import Snack as SnackORM
 from config.database import engine
 
-from .snack_repository_interface import ISnackRepository
-
-
-class SnackRepository(ISnackRepository):
+class SnackRepository:
     def _to_domain(self, row: SnackORM) -> Snack:
         return Snack(snack_id=row.snack_id, name=row.name, preis=row.preis)
 

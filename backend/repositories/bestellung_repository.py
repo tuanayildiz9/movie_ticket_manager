@@ -10,10 +10,7 @@ from backend.models.orm.ticket_snack_sql import TicketSnack as TicketSnackORM
 from backend.models.orm.ticket_sql import Ticket as TicketORM
 from config.database import engine
 
-from .bestellung_repository_interface import IBestellungRepository
-
-
-class BestellungRepository(IBestellungRepository):
+class BestellungRepository:
     def _to_domain(self, session: Session, row: BestellungORM) -> Bestellung:
         bestellung = Bestellung(
             bestellung_id=row.bestellung_id,

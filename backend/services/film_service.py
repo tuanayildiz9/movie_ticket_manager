@@ -6,6 +6,10 @@ from backend.models import Bewertung, Film
 from backend.repositories.bewertung_repository import BewertungRepository
 from backend.repositories.film_repository import FilmRepository
 from backend.repositories.kunde_repository import KundeRepository
+from sqlmodel import Session, select
+from backend.models.orm.kategorie_sql import Kategorie as KategorieORM
+from backend.models.orm.sprache_sql import Sprache as SpracheORM
+from config.database import engine
 
 
 class FilmService:
@@ -76,4 +80,42 @@ class FilmService:
             sort=None,
             page=1,
             size=100,
+        )
+
+    def search_films(
+        self,
+        search_term: str | None = None,
+        kategorie_name: str | None = None,
+        sprache_name: str | None = None,
+        max_altersfreigabe: int | None = None,
+        sort: str | None = None,
+        page: int = 1,
+        size: int = 100,
+    ) -> list[Film]:
+        """Search and filter films by optional human-friendly names.
+
+        Resolves `kategorie_name` and `sprache_name` to their UUIDs and delegates to the repository.
+        """
+        kategorie_id = None
+        sprache_id = None
+        with Session(engine) as session:
+            if kategorie_name:
+                k = session.exec(select(KategorieORM).where(KategorieORM.name == kategorie_name)).first()
+                if k is not None:
+                    kategorie_id = k.kategorie_id
+            if sprache_name:
+                s = session.exec(select(SpracheORM).where(SpracheORM.name == sprache_name)).first()
+                if s is not None:
+                    sprache_id = s.sprache_id
+
+        return self.film_repo.find(
+            filter_data={
+                "search_term": search_term,
+                "sprache_id": sprache_id,
+                "kategorie_id": kategorie_id,
+                "max_altersfreigabe": max_altersfreigabe,
+            },
+            sort=sort,
+            page=page,
+            size=size,
         )

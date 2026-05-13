@@ -28,7 +28,7 @@ Im Movie Ticket Manager können Admins:
 | US-02 | Als Kunde möchte ich ein Konto anlegen können, damit ich all meine Käufe einfach verwalten kann. | Hoch | Umgesetzt | Vorname, Nachname, E-Mail, Passwort, Geburtsdatum, Adresse, Zahlungsart | String, String, String, String, Date, String, String | Kontobestätigung | Boolean |
 | US-03 | Als Kunde möchte ich Tickets kaufen können, damit ich die Tickets bequem im Voraus besorgen kann und mir den Zugang ins Kino vereinfachen kann. | Hoch | Umgesetzt | Film-ID, Vorstellungs-ID, Anzahl Tickets, Zahlungsart | Int, Int, Int, String | Bestellbestätigung, Bestellübersicht | Boolean, String |
 | US-04 | Als Kunde möchte ich Sitzplätze auswählen können, damit ich entscheiden kann, wo ich sitze. | Hoch | Umgesetzt | Vorstellungs-ID, Sitzplatz | Int, String | Bestätigter Sitzplatz, Sitzplatz als belegt markiert | String, Boolean |
-| US-05 | Als Kunde möchte ich die Filme auf der Webseite sortieren und filtern können, da ich damit meine Suche nach Filmen verfeinern kann. | Mittel | Umgesetzt | Filteroptionen (Kategorie, Sprache, Altersfreigabe) | String, String, Int | Gefilterte Filmliste | List[Film] |
+| US-05 | Als Kunde möchte ich die Filme auf der Webseite sortieren und filtern können, da ich damit meine Suche nach Filmen verfeinern kann. | Mittel | Umgesetzt | Filteroptionen (Kategorie, Sprache, Altersfreigabe), Suchoption (Titel) | String, String, Int | Gefilterte Filmliste | List[Film] |
 | US-06 | Als Kunde möchte ich Rabatte (Student, Senior, Kind) auswählen können, damit ich den vergünstigten Preis erhalte. | Mittel | Umgesetzt | Rabatt-Typ | String | Aktualisierter Ticketpreis | Float |
 | US-07 | Als Kunde möchte ich Snacks zum Ticket hinzufügen können, damit ich mein Kinoerlebnis bequem planen kann. | Niedrig | Umgesetzt | Snack-Auswahl | String | Snack zum Ticket hinzugefügt, Gesamtpreis aktualisiert | Boolean, Float |
 | US-08 | Als Kunde möchte ich nach dem Kauf eine Bestellübersicht sehen, damit ich alle Details meines Tickets auf einen Blick habe. | Hoch | Umgesetzt | – | – | Filmtitel, Saal, Sitzplatz, Datum, Uhrzeit, Anzahl Tickets, Gesamtpreis | String, String, String, Date, Time, Int, Float |
@@ -40,6 +40,8 @@ Im Movie Ticket Manager können Admins:
 | AS-01 | Als Admin möchte ich neue Filme hinzufügen können, damit das Filmprogramm aktuell angezeigt wird. | Hoch | Offen | Titel, Beschreibung, Kategorie, Sprache, Altersfreigabe, Coverbild, Erscheinungsjahr | String, String, String, String, Int, String, Int | Neuer Film in der Datenbank | Boolean |
 | AS-02a | Als Admin möchte ich bestehende Filme bearbeiten können, damit falsche Informationen korrigiert werden können. | Hoch | Offen | Film-ID, Titel, Beschreibung, Kategorie, Sprache, Altersfreigabe, Coverbild, Erscheinungsjahr | Int, String, String, String, String, Int, String, Int | Aktualisierter Film in der Datenbank | Boolean |
 | AS-02b | Als Admin möchte ich Filme löschen können, damit veraltete Einträge entfernt werden. | Hoch | Offen | Film-ID | Int | Film aus der Datenbank gelöscht | Boolean |
+| AS-03 | Der Admin kann die Ticketverkäufe eines Films einsehen. Dabei werden Informationen wie Anzahl verkaufter Tickets und Einnahmen pro Film angezeigt, um die Auslastung und Beliebtheit der Filme zu überwachen. | Hoch | Offen |  |  |  |  |
+| AS-04 | Der Admin kann Filmvorstellungen verwalten, indem er Datum, Uhrzeit und den zugehörigen Saal erstellen, bearbeiten oder löschen kann. Dadurch können Spielzeiten flexibel geplant und angepasst werden. | Hoch | Offen |  |  |  |  |
 
 ---
 

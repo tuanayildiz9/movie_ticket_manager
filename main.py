@@ -31,6 +31,6 @@ def build_application() -> tuple[UserService, FilmService, BestellungService, Ad
 		kunde_repo=kunde_repo,
 		snack_repo=snack_repo,
 	)
-	admin_service = AdminService(film_repo=film_repo, bestellung_repo=bestellung_repo)
+	admin_service = AdminService(film_repo=film_repo, bestellung_repo=bestellung_repo, account_repo=account_repo)
 	return user_service, film_service, bestellung_service, admin_service
 

@@ -37,11 +37,11 @@ Im Movie Ticket Manager können Admins:
 ### Admin
 | ID | User Story | Priorität | Status | Input | Input-Typ | Output | Output-Typ |
 |---|---|---|---|---|---|---|---|
-| AS-01 | Als Admin möchte ich neue Filme hinzufügen können, damit das Filmprogramm aktuell angezeigt wird. | Hoch | Offen | Titel, Beschreibung, Kategorie, Sprache, Altersfreigabe, Coverbild, Erscheinungsjahr | String, String, String, String, Int, String, Int | Neuer Film in der Datenbank | Boolean |
-| AS-02a | Als Admin möchte ich bestehende Filme bearbeiten können, damit falsche Informationen korrigiert werden können. | Hoch | Offen | Film-ID, Titel, Beschreibung, Kategorie, Sprache, Altersfreigabe, Coverbild, Erscheinungsjahr | Int, String, String, String, String, Int, String, Int | Aktualisierter Film in der Datenbank | Boolean |
-| AS-02b | Als Admin möchte ich Filme löschen können, damit veraltete Einträge entfernt werden. | Hoch | Offen | Film-ID | Int | Film aus der Datenbank gelöscht | Boolean |
-| AS-03 | Der Admin kann die Ticketverkäufe eines Films einsehen. Dabei werden Informationen wie Anzahl verkaufter Tickets und Einnahmen pro Film angezeigt, um die Auslastung und Beliebtheit der Filme zu überwachen. | Hoch | Offen |  |  |  |  |
-| AS-04 | Der Admin kann Filmvorstellungen verwalten, indem er Datum, Uhrzeit und den zugehörigen Saal erstellen, bearbeiten oder löschen kann. Dadurch können Spielzeiten flexibel geplant und angepasst werden. | Hoch | Offen |  |  |  |  |
+| AS-01 | Als Admin möchte ich neue Filme hinzufügen können, damit das Filmprogramm aktuell angezeigt wird. | Hoch | Umgesetzt | Titel, Beschreibung, Kategorie, Sprache, Altersfreigabe, Coverbild, Erscheinungsjahr | String, String, String, String, Int, String, Int | Neuer Film in der Datenbank | Boolean |
+| AS-02a | Als Admin möchte ich bestehende Filme bearbeiten können, damit falsche Informationen korrigiert werden können. | Hoch | Umgesetzt | Film-ID, Titel, Beschreibung, Kategorie, Sprache, Altersfreigabe, Coverbild, Erscheinungsjahr | Int, String, String, String, String, Int, String, Int | Aktualisierter Film in der Datenbank | Boolean |
+| AS-02b | Als Admin möchte ich Filme löschen können, damit veraltete Einträge entfernt werden. | Hoch | Umgesetzt | Film-ID | Int | Film aus der Datenbank gelöscht | Boolean |
+| AS-03 | Der Admin kann die Ticketverkäufe eines Films einsehen. Dabei werden Informationen wie Anzahl verkaufter Tickets und Einnahmen pro Film angezeigt, um die Auslastung und Beliebtheit der Filme zu überwachen. | Hoch | Umgesetzt |  |  |  |  |
+| AS-04 | Der Admin kann Filmvorstellungen verwalten, indem er Datum, Uhrzeit und den zugehörigen Saal erstellen, bearbeiten oder löschen kann. Dadurch können Spielzeiten flexibel geplant und angepasst werden. | Hoch | Umgesetzt |  |  |  |  |
 
 | GS-01 | Als allgemeiner Benutzer (Admin oder Kunde) möchte ich mich in die Applikation einloggen können, um die verfügbaren Funktionen nutzen zu können. | Hoch | Offen |  |  |  |  |
 

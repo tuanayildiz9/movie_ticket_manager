@@ -19,14 +19,15 @@ class Ticket:
     snacks: list[TicketSnack] = field(default_factory=list)
 
     def apply_discount(self, base_price: Decimal | int | float | str) -> Decimal:
-        discount_factors = {
-            Verguensigungsart.REGULAER: Decimal("1.00"),
-            Verguensigungsart.STUDENT: Decimal("0.80"),
-            Verguensigungsart.SENIOR: Decimal("0.75"),
-            Verguensigungsart.KIND: Decimal("0.50"),
+        discount_amounts = {
+            Verguensigungsart.REGULAER: Decimal("0.00"),
+            Verguensigungsart.STUDENT: Decimal("4.00"),
+            Verguensigungsart.SENIOR: Decimal("3.00"),
+            Verguensigungsart.KIND: Decimal("6.00"),
         }
-        factor = discount_factors.get(self.verguenstigungsart, Decimal("1.00"))
-        self.preis = (to_decimal(base_price) * factor).quantize(Decimal("0.01"))
+        base = to_decimal(base_price)
+        discount = discount_amounts.get(self.verguenstigungsart, Decimal("0.00"))
+        self.preis = max(base - discount, Decimal("0.00")).quantize(Decimal("0.01"))
         return self.preis
 
     def add_snack(self, snack_line: TicketSnack) -> None:

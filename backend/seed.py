@@ -119,10 +119,6 @@ def seed_database() -> None:
     with Session(engine) as session:
         _create_admin_account(session)
 
-        if session.exec(select(Film)).first():
-            session.commit()
-            return
-
         zahlungsarten = _create_payment_methods(session)
         kategorien = _create_categories(session)
         sprachen = _create_languages(session)
@@ -140,30 +136,50 @@ def seed_database() -> None:
 
 
 def _create_payment_methods(session: Session) -> list[Zahlungsart]:
-    rows = [Zahlungsart(**item) for item in PAYMENT_METHODS]
-    session.add_all(rows)
-    session.flush()
+    rows: list[Zahlungsart] = []
+    for item in PAYMENT_METHODS:
+        row = session.exec(select(Zahlungsart).where(Zahlungsart.name == item["name"])).first()
+        if row is None:
+            row = Zahlungsart(**item)
+            session.add(row)
+            session.flush()
+        rows.append(row)
     return rows
 
 
 def _create_categories(session: Session) -> list[Kategorie]:
-    rows = [Kategorie(**item) for item in CATEGORIES]
-    session.add_all(rows)
-    session.flush()
+    rows: list[Kategorie] = []
+    for item in CATEGORIES:
+        row = session.exec(select(Kategorie).where(Kategorie.name == item["name"])).first()
+        if row is None:
+            row = Kategorie(**item)
+            session.add(row)
+            session.flush()
+        rows.append(row)
     return rows
 
 
 def _create_languages(session: Session) -> list[Sprache]:
-    rows = [Sprache(**item) for item in LANGUAGES]
-    session.add_all(rows)
-    session.flush()
+    rows: list[Sprache] = []
+    for item in LANGUAGES:
+        row = session.exec(select(Sprache).where(Sprache.name == item["name"])).first()
+        if row is None:
+            row = Sprache(**item)
+            session.add(row)
+            session.flush()
+        rows.append(row)
     return rows
 
 
 def _create_snacks(session: Session) -> list[Snack]:
-    rows = [Snack(**item) for item in SNACKS]
-    session.add_all(rows)
-    session.flush()
+    rows: list[Snack] = []
+    for item in SNACKS:
+        row = session.exec(select(Snack).where(Snack.name == item["name"])).first()
+        if row is None:
+            row = Snack(**item)
+            session.add(row)
+            session.flush()
+        rows.append(row)
     return rows
 
 
@@ -186,24 +202,28 @@ def _create_customers(session: Session, zahlungsarten: list[Zahlungsart]) -> lis
     zahlungsart_map = {row.name: row for row in zahlungsarten}
     rows: list[Kunde] = []
     for item in CUSTOMERS:
-        account = Account(email=item["email"], rolle="kunde")
-        account.set_password(item["passwort"])
-        session.add(account)
-        session.flush()
+        account = session.exec(select(Account).where(Account.email == item["email"])).first()
+        if account is None:
+            account = Account(email=item["email"], rolle="kunde")
+            account.set_password(item["passwort"])
+            session.add(account)
+            session.flush()
 
-        row = Kunde(
-            account_id=account.account_id,
-            vorname=item["vorname"],
-            nachname=item["nachname"],
-            adresse=item["adresse"],
-            plz=item["plz"],
-            geburtsdatum=item["geburtsdatum"],
-            telefonnummer=item["telefonnummer"],
-            zahlungsart_id=zahlungsart_map[item["zahlungsart_name"]].zahlungsart_id,
-        )
+        row = session.exec(select(Kunde).where(Kunde.account_id == account.account_id)).first()
+        if row is None:
+            row = Kunde(
+                account_id=account.account_id,
+                vorname=item["vorname"],
+                nachname=item["nachname"],
+                adresse=item["adresse"],
+                plz=item["plz"],
+                geburtsdatum=item["geburtsdatum"],
+                telefonnummer=item["telefonnummer"],
+                zahlungsart_id=zahlungsart_map[item["zahlungsart_name"]].zahlungsart_id,
+            )
+            session.add(row)
+            session.flush()
         rows.append(row)
-    session.add_all(rows)
-    session.flush()
     return rows
 
 
@@ -216,25 +236,41 @@ def _create_films(
     sprache_map = {row.name: row for row in sprachen}
     rows: list[Film] = []
     for item in FILMS:
-        row = Film(
-            titel=item["titel"],
-            beschreibung=item["beschreibung"],
-            altersfreigabe=item["altersfreigabe"],
-            coverbild_url=item["coverbild_url"],
-            hauptdarsteller=item["hauptdarsteller"],
-            erscheinungsdatum=item["erscheinungsdatum"],
-            basispreis=item["basispreis"],
-            aktiv=True,
-        )
+        row = session.exec(select(Film).where(Film.titel == item["titel"])).first()
+        if row is None:
+            row = Film(
+                titel=item["titel"],
+                beschreibung=item["beschreibung"],
+                altersfreigabe=item["altersfreigabe"],
+                coverbild_url=item["coverbild_url"],
+                hauptdarsteller=item["hauptdarsteller"],
+                erscheinungsdatum=item["erscheinungsdatum"],
+                basispreis=item["basispreis"],
+                aktiv=True,
+            )
+            session.add(row)
+            session.flush()
         rows.append(row)
-    session.add_all(rows)
-    session.flush()
 
     for film_row, item in zip(rows, FILMS, strict=False):
         for kategorie_name in item["kategorien"]:
-            session.add(FilmKategorie(film_id=film_row.film_id, kategorie_id=kategorie_map[kategorie_name].kategorie_id))
+            exists = session.exec(
+                select(FilmKategorie).where(
+                    FilmKategorie.film_id == film_row.film_id,
+                    FilmKategorie.kategorie_id == kategorie_map[kategorie_name].kategorie_id,
+                )
+            ).first()
+            if exists is None:
+                session.add(FilmKategorie(film_id=film_row.film_id, kategorie_id=kategorie_map[kategorie_name].kategorie_id))
         for sprache_name in item["sprachen"]:
-            session.add(FilmSprache(film_id=film_row.film_id, sprache_id=sprache_map[sprache_name].sprache_id))
+            exists = session.exec(
+                select(FilmSprache).where(
+                    FilmSprache.film_id == film_row.film_id,
+                    FilmSprache.sprache_id == sprache_map[sprache_name].sprache_id,
+                )
+            ).first()
+            if exists is None:
+                session.add(FilmSprache(film_id=film_row.film_id, sprache_id=sprache_map[sprache_name].sprache_id))
 
     session.flush()
     return rows
@@ -248,31 +284,45 @@ def _create_vorstellungen_and_seats(
     sitzplaetze: list[Sitzplatz] = []
 
     for index, film in enumerate(filme, start=1):
-        vorstellung = Vorstellung(
-            film_id=film.film_id,
-            saal=f"Saal {index}",
-            ort="Zürich",
-            startzeit=datetime(2026, 5, index, 19, 30),
-            endzeit=datetime(2026, 5, index, 21, 45),
-        )
+        vorstellung = session.exec(
+            select(Vorstellung).where(
+                Vorstellung.film_id == film.film_id,
+                Vorstellung.saal == f"Saal {index}",
+                Vorstellung.ort == "Zürich",
+            )
+        ).first()
+        if vorstellung is None:
+            vorstellung = Vorstellung(
+                film_id=film.film_id,
+                saal=f"Saal {index}",
+                ort="Zürich",
+                startzeit=datetime(2026, 5, index, 19, 30),
+                endzeit=datetime(2026, 5, index, 21, 45),
+            )
+            session.add(vorstellung)
+            session.flush()
         vorstellungen.append(vorstellung)
-    session.add_all(vorstellungen)
-    session.flush()
 
     seat_plan = [("A1", "A"), ("A2", "A"), ("B1", "B"), ("B2", "B")]
     for vorstellung in vorstellungen:
         for label, sektor in seat_plan:
-            sitzplaetze.append(
-                Sitzplatz(
+            seat_row = session.exec(
+                select(Sitzplatz).where(
+                    Sitzplatz.vorstellung_id == vorstellung.vorstellung_id,
+                    Sitzplatz.sitz_label == label,
+                )
+            )
+            seat_row = seat_row.first()
+            if seat_row is None:
+                seat_row = Sitzplatz(
                     vorstellung_id=vorstellung.vorstellung_id,
                     sitz_label=label,
                     sektor=sektor,
                     besetzt=False,
                 )
-            )
-
-    session.add_all(sitzplaetze)
-    session.flush()
+                session.add(seat_row)
+                session.flush()
+            sitzplaetze.append(seat_row)
     return vorstellungen, sitzplaetze
 
 
@@ -283,13 +333,28 @@ def _create_association_rows(
     kategorien: list[Kategorie],
     sprachen: list[Sprache],
 ) -> None:
-    session.add_all(
-        [
-            KundenKategoriePraeferenz(kunde_id=kunden[0].kunde_id, kategorie_id=kategorien[0].kategorie_id),
-            KundenKategoriePraeferenz(kunde_id=kunden[1].kunde_id, kategorie_id=kategorien[1].kategorie_id),
-            FilmlisteKunde(kunde_id=kunden[0].kunde_id, film_id=filme[1].film_id),
-        ]
-    )
+    items = [
+        KundenKategoriePraeferenz(kunde_id=kunden[0].kunde_id, kategorie_id=kategorien[0].kategorie_id),
+        KundenKategoriePraeferenz(kunde_id=kunden[1].kunde_id, kategorie_id=kategorien[1].kategorie_id),
+        FilmlisteKunde(kunde_id=kunden[0].kunde_id, film_id=filme[1].film_id),
+    ]
+    for relation in items:
+        if isinstance(relation, KundenKategoriePraeferenz):
+            exists = session.exec(
+                select(KundenKategoriePraeferenz).where(
+                    KundenKategoriePraeferenz.kunde_id == relation.kunde_id,
+                    KundenKategoriePraeferenz.kategorie_id == relation.kategorie_id,
+                )
+            ).first()
+        else:
+            exists = session.exec(
+                select(FilmlisteKunde).where(
+                    FilmlisteKunde.kunde_id == relation.kunde_id,
+                    FilmlisteKunde.film_id == relation.film_id,
+                )
+            ).first()
+        if exists is None:
+            session.add(relation)
 
 
 def _create_orders_and_tickets(
@@ -299,12 +364,28 @@ def _create_orders_and_tickets(
     vorstellungen: list[Vorstellung],
     sitzplaetze: list[Sitzplatz],
 ) -> tuple[list[Bestellung], list[Ticket]]:
-    bestellungen = [
-        Bestellung(kunde_id=kunden[0].kunde_id, bestellungsdatum=datetime(2026, 4, 30, 10, 0), anzahl_tickets=1, total_betrag=Decimal("20.50")),
-        Bestellung(kunde_id=kunden[1].kunde_id, bestellungsdatum=datetime(2026, 4, 30, 11, 15), anzahl_tickets=1, total_betrag=Decimal("17.00")),
+    bestellungen: list[Bestellung] = []
+    order_specs = [
+        (kunden[0].kunde_id, datetime(2026, 4, 30, 10, 0), Decimal("20.50")),
+        (kunden[1].kunde_id, datetime(2026, 4, 30, 11, 15), Decimal("17.00")),
     ]
-    session.add_all(bestellungen)
-    session.flush()
+    for kunde_id, bestellungsdatum, total_betrag in order_specs:
+        bestellung = session.exec(
+            select(Bestellung).where(
+                Bestellung.kunde_id == kunde_id,
+                Bestellung.bestellungsdatum == bestellungsdatum,
+            )
+        ).first()
+        if bestellung is None:
+            bestellung = Bestellung(
+                kunde_id=kunde_id,
+                bestellungsdatum=bestellungsdatum,
+                anzahl_tickets=1,
+                total_betrag=total_betrag,
+            )
+            session.add(bestellung)
+            session.flush()
+        bestellungen.append(bestellung)
 
     tickets = [
         Ticket(
@@ -324,7 +405,10 @@ def _create_orders_and_tickets(
             preis=Decimal("10.40"),
         ),
     ]
-    session.add_all(tickets)
+    for ticket in tickets:
+        exists = session.exec(select(Ticket).where(Ticket.ticket_id == ticket.ticket_id)).first()
+        if exists is None:
+            session.add(ticket)
 
     # Mark the seats as occupied so the seat state matches the demo tickets.
     sitzplaetze[0].besetzt = True
@@ -335,30 +419,45 @@ def _create_orders_and_tickets(
 
 
 def _create_ticket_snacks(session: Session, tickets: list[Ticket], snacks: list[Snack]) -> None:
-    session.add_all(
-        [
-            TicketSnack(ticket_id=tickets[0].ticket_id, snack_id=snacks[0].snack_id, anzahl=1),
-            TicketSnack(ticket_id=tickets[1].ticket_id, snack_id=snacks[1].snack_id, anzahl=2),
-        ]
-    )
+    rows = [
+        TicketSnack(ticket_id=tickets[0].ticket_id, snack_id=snacks[0].snack_id, anzahl=1),
+        TicketSnack(ticket_id=tickets[1].ticket_id, snack_id=snacks[1].snack_id, anzahl=2),
+    ]
+    for row in rows:
+        exists = session.exec(
+            select(TicketSnack).where(
+                TicketSnack.ticket_id == row.ticket_id,
+                TicketSnack.snack_id == row.snack_id,
+            )
+        ).first()
+        if exists is None:
+            session.add(row)
 
 
 def _create_ratings(session: Session, kunden: list[Kunde], filme: list[Film]) -> None:
-    session.add_all(
-        [
-            Bewertung(
-                kunde_id=kunden[0].kunde_id,
-                film_id=filme[0].film_id,
-                bewertung=5,
-                kommentar="Starker Auftakt und gute Effekte.",
-                bewertungsdatum=datetime(2026, 4, 30, 12, 0),
-            ),
-            Bewertung(
-                kunde_id=kunden[1].kunde_id,
-                film_id=filme[1].film_id,
-                bewertung=4,
-                kommentar="Emotional und gut gespielt.",
-                bewertungsdatum=datetime(2026, 4, 30, 12, 30),
-            ),
-        ]
-    )
+    rows = [
+        Bewertung(
+            kunde_id=kunden[0].kunde_id,
+            film_id=filme[0].film_id,
+            bewertung=5,
+            kommentar="Starker Auftakt und gute Effekte.",
+            bewertungsdatum=datetime(2026, 4, 30, 12, 0),
+        ),
+        Bewertung(
+            kunde_id=kunden[1].kunde_id,
+            film_id=filme[1].film_id,
+            bewertung=4,
+            kommentar="Emotional und gut gespielt.",
+            bewertungsdatum=datetime(2026, 4, 30, 12, 30),
+        ),
+    ]
+    for row in rows:
+        exists = session.exec(
+            select(Bewertung).where(
+                Bewertung.kunde_id == row.kunde_id,
+                Bewertung.film_id == row.film_id,
+                Bewertung.bewertungsdatum == row.bewertungsdatum,
+            )
+        ).first()
+        if exists is None:
+            session.add(row)

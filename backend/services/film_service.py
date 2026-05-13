@@ -23,6 +23,30 @@ class FilmService:
         self.bewertung_repo = bewertung_repo
         self.kunde_repo = kunde_repo
 
+    def _normalize_sort(self, sort: str | None) -> str | None:
+        """Map frontend-friendly sort keys to model attributes and preserve order.
+
+        Examples: 'title' -> 'titel', '-price' -> '-basispreis'
+        """
+        if not sort:
+            return None
+        reverse = sort.startswith("-")
+        key = sort[1:] if reverse else sort
+        alias_map = {
+            "title": "titel",
+            "titel": "titel",
+            "release_date": "erscheinungsdatum",
+            "erscheinungsdatum": "erscheinungsdatum",
+            "date": "erscheinungsdatum",
+            "price": "basispreis",
+            "basispreis": "basispreis",
+            "age": "altersfreigabe",
+            "altersfreigabe": "altersfreigabe",
+            "aktiv": "aktiv",
+        }
+        mapped = alias_map.get(key, key)
+        return f"-{mapped}" if reverse else mapped
+
     def list_current_films(
         self,
         filter_data: dict[str, object] | None = None,
@@ -31,7 +55,8 @@ class FilmService:
         size: int = 10,
         summaries: bool = False,
     ) -> list[Film] | list[dict[str, object]]:
-        films = self.film_repo.list_current(filter_data=filter_data, sort=sort, page=page, size=size)
+        sort_param = self._normalize_sort(sort)
+        films = self.film_repo.list_current(filter_data=filter_data, sort=sort_param, page=page, size=size)
         if summaries:
             return [
                 {
@@ -108,6 +133,8 @@ class FilmService:
                 if s is not None:
                     sprache_id = s.sprache_id
 
+        sort_param = self._normalize_sort(sort)
+
         return self.film_repo.find(
             filter_data={
                 "search_term": search_term,
@@ -115,7 +142,7 @@ class FilmService:
                 "kategorie_id": kategorie_id,
                 "max_altersfreigabe": max_altersfreigabe,
             },
-            sort=sort,
+            sort=sort_param,
             page=page,
             size=size,
         )

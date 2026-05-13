@@ -24,15 +24,15 @@ Im Movie Ticket Manager können Admins:
 ### Kunde
 | ID | User Story | Priorität | Status | Input | Input-Typ | Output | Output-Typ |
 |---|---|---|---|---|---|---|---|
-| US-01 | Als Kunde möchte ich die aktuellen Filme sehen, damit ich informiert Tickets kaufen kann. | Hoch | Offen | – | – | Filmliste (Titel, Bild, Kategorie, Sprache) | List[Film] |
-| US-02 | Als Kunde möchte ich ein Konto anlegen können, damit ich all meine Käufe einfach verwalten kann. | Hoch | Offen | Vorname, Nachname, E-Mail, Passwort, Geburtsdatum, Adresse, Zahlungsart | String, String, String, String, Date, String, String | Kontobestätigung | Boolean |
+| US-01 | Als Kunde möchte ich die aktuellen Filme sehen, damit ich informiert Tickets kaufen kann. | Hoch | Umgesetzt | – | – | Filmliste (Titel, Bild, Kategorie, Sprache) | List[Film] |
+| US-02 | Als Kunde möchte ich ein Konto anlegen können, damit ich all meine Käufe einfach verwalten kann. | Hoch | Umgesetzt | Vorname, Nachname, E-Mail, Passwort, Geburtsdatum, Adresse, Zahlungsart | String, String, String, String, Date, String, String | Kontobestätigung | Boolean |
 | US-03 | Als Kunde möchte ich Tickets kaufen können, damit ich die Tickets bequem im Voraus besorgen kann und mir den Zugang ins Kino vereinfachen kann. | Hoch | Offen | Film-ID, Vorstellungs-ID, Anzahl Tickets, Zahlungsart | Int, Int, Int, String | Bestellbestätigung, Bestellübersicht | Boolean, String |
 | US-04 | Als Kunde möchte ich Sitzplätze auswählen können, damit ich entscheiden kann, wo ich sitze. | Hoch | Offen | Vorstellungs-ID, Sitzplatz | Int, String | Bestätigter Sitzplatz, Sitzplatz als belegt markiert | String, Boolean |
 | US-05 | Als Kunde möchte ich die Filme auf der Webseite sortieren und filtern können, da ich damit meine Suche nach Filmen verfeinern kann. | Mittel | Offen | Filteroptionen (Kategorie, Sprache, Altersfreigabe) | String, String, Int | Gefilterte Filmliste | List[Film] |
 | US-06 | Als Kunde möchte ich Rabatte (Student, Senior, Kind) auswählen können, damit ich den vergünstigten Preis erhalte. | Mittel | Offen | Rabatt-Typ | String | Aktualisierter Ticketpreis | Float |
 | US-07 | Als Kunde möchte ich Snacks zum Ticket hinzufügen können, damit ich mein Kinoerlebnis bequem planen kann. | Niedrig | Offen | Snack-Auswahl | String | Snack zum Ticket hinzugefügt, Gesamtpreis aktualisiert | Boolean, Float |
 | US-08 | Als Kunde möchte ich nach dem Kauf eine Bestellübersicht sehen, damit ich alle Details meines Tickets auf einen Blick habe. | Hoch | Offen | – | – | Filmtitel, Saal, Sitzplatz, Datum, Uhrzeit, Anzahl Tickets, Gesamtpreis | String, String, String, Date, Time, Int, Float |
-| US-09 | Als Kunde möchte ich Filme bewerten können, damit ich meine Meinung teilen kann. | Niedrig | Offen | Sternebewertung, Kommentar | Int, String | Gespeicherte Bewertung | Boolean |
+| US-09 | Als Kunde möchte ich Filme bewerten können, damit ich meine Meinung teilen kann. | Niedrig | Umgesetzt | Sternebewertung, Kommentar | Int, String | Gespeicherte Bewertung | Boolean |
 
 ### Admin
 | ID | User Story | Priorität | Status | Input | Input-Typ | Output | Output-Typ |

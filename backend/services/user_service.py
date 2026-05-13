@@ -12,15 +12,20 @@ class UserService:
         self.account_repo = account_repo
         self.kunde_repo = kunde_repo
 
+    def _require_text(self, value: object, field_name: str) -> str:
+        text = str(value).strip()
+        if not text:
+            raise ValueError(f"{field_name} darf nicht leer sein.")
+        return text
+
     def register(self, data: dict[str, object]) -> Kunde:
-        email = str(data.get("email", "")).lower()
+        email = self._require_text(data.get("email", ""), "E-Mail").lower()
         if self.account_repo.get_by_email(email) is not None:
             raise ValueError("E-Mail wird bereits verwendet.")
 
         account = Account(email=email, rolle="kunde")
-        passwort = str(data.get("passwort", ""))
-        if passwort:
-            account.set_password(passwort)
+        passwort = self._require_text(data.get("passwort", ""), "Passwort")
+        account.set_password(passwort)
         account = self.account_repo.create(account)
 
         zahlungsart_value = data.get("zahlungsart")
@@ -35,8 +40,8 @@ class UserService:
 
         kunde = Kunde(
             account_id=account.account_id,
-            vorname=str(data.get("vorname", "")),
-            nachname=str(data.get("nachname", "")),
+            vorname=self._require_text(data.get("vorname", ""), "Vorname"),
+            nachname=self._require_text(data.get("nachname", ""), "Nachname"),
             adresse=str(data.get("adresse", "")),
             plz=str(data.get("plz", "")),
             geburtsdatum=geburtsdatum,

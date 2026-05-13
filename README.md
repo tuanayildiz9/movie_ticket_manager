@@ -43,6 +43,8 @@ Im Movie Ticket Manager können Admins:
 | AS-03 | Der Admin kann die Ticketverkäufe eines Films einsehen. Dabei werden Informationen wie Anzahl verkaufter Tickets und Einnahmen pro Film angezeigt, um die Auslastung und Beliebtheit der Filme zu überwachen. | Hoch | Offen |  |  |  |  |
 | AS-04 | Der Admin kann Filmvorstellungen verwalten, indem er Datum, Uhrzeit und den zugehörigen Saal erstellen, bearbeiten oder löschen kann. Dadurch können Spielzeiten flexibel geplant und angepasst werden. | Hoch | Offen |  |  |  |  |
 
+| GS-01 | Als allgemeiner Benutzer (Admin oder Kunde) möchte ich mich in die Applikation einloggen können, um die verfügbaren Funktionen nutzen zu können. | Hoch | Offen |  |  |  |  |
+
 ---
 
 ## Use Cases

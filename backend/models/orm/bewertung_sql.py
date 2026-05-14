@@ -1,9 +1,12 @@
-from __future__ import annotations
-
 from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from .film_sql import Film
+    from .kunde_sql import Kunde
 
 
 class Bewertung(SQLModel, table=True):

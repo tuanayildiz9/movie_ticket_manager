@@ -1,1 +1,2 @@
 sqlmodel>=0.0.22
+nicegui>=1.4.0

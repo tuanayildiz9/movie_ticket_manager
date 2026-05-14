@@ -1,8 +1,7 @@
-from __future__ import annotations
-
+from hashlib import sha256
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, SQLModel
 
 
 class Account(SQLModel, table=True):
@@ -14,4 +13,5 @@ class Account(SQLModel, table=True):
     rolle: str = Field(default="kunde", index=True)
     aktiv: bool = Field(default=True, index=True)
 
-    kunde: "Kunde | None" = Relationship(back_populates="account")
+    def set_password(self, plain_password: str) -> None:
+        self.passwort_hash = sha256(plain_password.encode("utf-8")).hexdigest()

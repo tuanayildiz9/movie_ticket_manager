@@ -1,14 +1,16 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
 from decimal import Decimal
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import Column, Numeric
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
+    from .bestellung_sql import Bestellung
+    from .film_sql import Film
+    from .sitzplatz_sql import Sitzplatz
     from .ticket_snack_sql import TicketSnack
+    from .vorstellung_sql import Vorstellung
 
 
 class Ticket(SQLModel, table=True):

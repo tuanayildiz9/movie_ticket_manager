@@ -1,13 +1,11 @@
-from __future__ import annotations
-
 from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from .ticket_sql import Ticket
     from .snack_sql import Snack
+    from .ticket_sql import Ticket
 
 
 class TicketSnack(SQLModel, table=True):

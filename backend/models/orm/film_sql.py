@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 from datetime import date
 from decimal import Decimal
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import Column, Numeric
@@ -10,6 +9,14 @@ from sqlmodel import Field, Relationship, SQLModel
 from .film_kategorie_sql import FilmKategorie
 from .film_sprache_sql import FilmSprache
 from .filmliste_kunde_sql import FilmlisteKunde
+
+if TYPE_CHECKING:
+    from .bewertung_sql import Bewertung
+    from .kategorie_sql import Kategorie
+    from .kunde_sql import Kunde
+    from .sprache_sql import Sprache
+    from .ticket_sql import Ticket
+    from .vorstellung_sql import Vorstellung
 
 
 class Film(SQLModel, table=True):

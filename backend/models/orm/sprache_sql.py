@@ -1,10 +1,12 @@
-from __future__ import annotations
-
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlmodel import Field, Relationship, SQLModel
 
 from .film_sprache_sql import FilmSprache
+
+if TYPE_CHECKING:
+    from .film_sql import Film
 
 
 class Sprache(SQLModel, table=True):

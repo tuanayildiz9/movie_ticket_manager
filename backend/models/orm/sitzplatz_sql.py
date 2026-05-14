@@ -1,8 +1,11 @@
-from __future__ import annotations
-
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from .ticket_sql import Ticket
+    from .vorstellung_sql import Vorstellung
 
 
 class Sitzplatz(SQLModel, table=True):
@@ -14,5 +17,5 @@ class Sitzplatz(SQLModel, table=True):
     sektor: str = Field(default="", index=True)
     besetzt: bool = Field(default=False)
 
-    vorstellung: "Vorstellung" = Relationship(back_populates="sitzplaetze")
-    ticket: "Ticket | None" = Relationship(back_populates="sitzplatz")
+    vorstellung: Optional["Vorstellung"] = Relationship(back_populates="sitzplaetze")
+    ticket: Optional["Ticket"] = Relationship(back_populates="sitzplatz")

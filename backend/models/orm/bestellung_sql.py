@@ -1,11 +1,14 @@
-from __future__ import annotations
-
 from datetime import datetime
 from decimal import Decimal
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import Column, Numeric
 from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from .kunde_sql import Kunde
+    from .ticket_sql import Ticket
 
 
 class Bestellung(SQLModel, table=True):

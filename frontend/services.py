@@ -3,6 +3,7 @@ from uuid import UUID
 from sqlmodel import Session, select
 
 from backend.models.orm.kategorie_sql import Kategorie as KategorieORM
+from backend.models.orm.sitzplatz_sql import Sitzplatz as SitzplatzORM
 from backend.models.orm.sprache_sql import Sprache as SpracheORM
 from backend.models.orm.zahlungsart_sql import Zahlungsart as ZahlungsartORM
 from config.database import engine
@@ -73,6 +74,14 @@ def get_kategorie_names(ids: list[UUID]) -> list[str]:
             if row:
                 names.append(row.name)
         return names
+
+
+def get_sitzplatz_info(sitzplatz_id: UUID) -> dict | None:
+    with Session(engine) as session:
+        row = session.get(SitzplatzORM, sitzplatz_id)
+        if row:
+            return {"sitz_label": row.sitz_label, "sektor": row.sektor}
+    return None
 
 
 def get_sprache_names(ids: list[UUID]) -> list[str]:

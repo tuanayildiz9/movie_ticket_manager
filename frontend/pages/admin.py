@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from uuid import UUID
 
@@ -165,8 +165,69 @@ def _vorstellungen_tab(account_id: UUID | None) -> None:
 def _umsatz_tab() -> None:
     ui.label("Umsatzübersicht").classes("text-xl font-bold text-white mb-4")
 
-    all_films = svc.film_service().film_repo.list_all()
-    film_options = {str(f.film_id): f.titel for f in all_films}
+    # ── Gesamtübersicht ───────────────────────────────────────────────────────
+    try:
+        all_orders = svc.bestellung_repo().list_all()
+        total_umsatz = sum(o.total_betrag for o in all_orders)
+        total_tickets = sum(o.anzahl_tickets for o in all_orders)
+        total_orders = len(all_orders)
+
+        with ui.row().classes("gap-4 flex-wrap mb-6"):
+            with ui.card().classes("bg-amber-700 rounded-xl p-5 text-center min-w-40"):
+                ui.label(f"CHF {total_umsatz:.2f}").classes("text-3xl font-bold text-white")
+                ui.label("Gesamtumsatz").classes("text-amber-100 text-sm mt-1")
+            with ui.card().classes("bg-gray-700 rounded-xl p-5 text-center min-w-40"):
+                ui.label(str(total_tickets)).classes("text-3xl font-bold text-white")
+                ui.label("Tickets gesamt").classes("text-gray-300 text-sm mt-1")
+            with ui.card().classes("bg-gray-700 rounded-xl p-5 text-center min-w-40"):
+                ui.label(str(total_orders)).classes("text-3xl font-bold text-white")
+                ui.label("Bestellungen").classes("text-gray-300 text-sm mt-1")
+    except Exception as e:
+        ui.label(f"Fehler beim Laden der Gesamtübersicht: {e}").classes("text-red-400 text-sm mb-4")
+
+    ui.separator().classes("my-4 border-gray-600")
+
+    # ── Umsatz pro Film ───────────────────────────────────────────────────────
+    ui.label("Umsatz pro Film").classes("text-lg font-bold text-white mb-3")
+    try:
+        all_films = svc.film_service().film_repo.list_all()
+        film_rows = []
+        for f in all_films:
+            orders_for_film = svc.bestellung_repo().list_by_film(f.film_id)
+            tickets_sold = sum(len(o.tickets) for o in orders_for_film)
+            umsatz_film = sum(
+                sum(t.preis for t in o.tickets if t.film_id == f.film_id)
+                for o in orders_for_film
+            )
+            film_rows.append({
+                "id": str(f.film_id),
+                "titel": f.titel,
+                "tickets": tickets_sold,
+                "umsatz": f"CHF {umsatz_film:.2f}",
+                "aktiv": "✓" if f.aktiv else "✗",
+            })
+        # Sortiert nach Umsatz (höchster zuerst)
+        film_rows.sort(key=lambda x: x["umsatz"], reverse=True)
+        ui.table(
+            columns=[
+                {"name": "titel", "label": "Film", "field": "titel", "align": "left", "sortable": True},
+                {"name": "tickets", "label": "Tickets", "field": "tickets", "align": "center", "sortable": True},
+                {"name": "umsatz", "label": "Umsatz", "field": "umsatz", "align": "right", "sortable": True},
+                {"name": "aktiv", "label": "Aktiv", "field": "aktiv", "align": "center"},
+            ],
+            rows=film_rows,
+            row_key="id",
+        ).classes("w-full bg-gray-800 text-white rounded-xl mb-6").props("dark flat")
+    except Exception as e:
+        ui.label(f"Fehler: {e}").classes("text-red-400 text-sm mb-4")
+
+    ui.separator().classes("my-4 border-gray-600")
+
+    # ── Detail pro Film (aufklappbar) ─────────────────────────────────────────
+    ui.label("Detail-Ansicht pro Film").classes("text-lg font-bold text-white mb-3")
+
+    all_films_detail = svc.film_service().film_repo.list_all()
+    film_options = {str(f.film_id): f.titel for f in all_films_detail}
 
     film_sel = (
         ui.select(options=film_options, label="Film auswählen", with_input=True)
@@ -176,7 +237,7 @@ def _umsatz_tab() -> None:
 
     result_area = ui.element("div").classes("w-full mt-4")
 
-    def load_overview() -> None:
+    def load_detail() -> None:
         if not film_sel.value:
             return
         try:
@@ -185,14 +246,14 @@ def _umsatz_tab() -> None:
             with result_area:
                 with ui.row().classes("gap-4 flex-wrap mb-4"):
                     with ui.card().classes("bg-amber-800 rounded-xl p-4 text-center"):
-                        ui.label(str(overview["verkaufte_tickets"])).classes("text-3xl font-bold text-white")
+                        ui.label(str(overview["verkaufte_tickets"])).classes("text-2xl font-bold text-white")
                         ui.label("Tickets verkauft").classes("text-amber-200 text-sm")
                     with ui.card().classes("bg-gray-700 rounded-xl p-4 text-center"):
-                        ui.label(str(overview["freie_plaetze"])).classes("text-3xl font-bold text-white")
+                        ui.label(str(overview["freie_plaetze"])).classes("text-2xl font-bold text-white")
                         ui.label("Freie Plätze").classes("text-gray-300 text-sm")
 
                 if overview["vorstellungen"]:
-                    ui.label("Details pro Vorstellung").classes("text-lg font-bold text-white mt-4 mb-2")
+                    ui.label("Vorstellungen").classes("text-base font-bold text-white mt-2 mb-2")
                     columns = [
                         {"name": "startzeit", "label": "Zeit", "field": "startzeit", "align": "left"},
                         {"name": "ort", "label": "Ort / Saal", "field": "ort", "align": "left"},
@@ -217,7 +278,7 @@ def _umsatz_tab() -> None:
             with result_area:
                 ui.label(f"Fehler: {e}").classes("text-red-400")
 
-    film_sel.on_value_change(lambda _: load_overview())
+    film_sel.on_value_change(lambda _: load_detail())
 
 
 # --- Dialogs ---
@@ -245,8 +306,11 @@ def _create_film_dialog(account_id: UUID | None, on_done) -> None:
                 "outlined dark color=amber"
             ).classes("flex-1")
 
-        ui.label("Erscheinungsdatum").classes("text-gray-400 text-sm mt-3")
-        datum_in = ui.date().classes("w-full")
+        datum_in = (
+            ui.date_input("Erscheinungsdatum", value=date.today())
+            .classes("w-full mt-3")
+            .props("outlined dark color=amber")
+        )
 
         kat_sel = (
             ui.select(
@@ -271,14 +335,13 @@ def _create_film_dialog(account_id: UUID | None, on_done) -> None:
 
         def create() -> None:
             from datetime import date as date_type
-            from sqlmodel import Session, select as sql_select
+            from sqlmodel import Session, select as sql_select  # noqa: F401
             from backend.models.orm.kategorie_sql import Kategorie as KatORM
             from backend.models.orm.sprache_sql import Sprache as SprORM
             from config.database import engine
 
             try:
-                raw_date = datum_in.value or ""
-                erschein = date_type.fromisoformat(raw_date.replace("/", "-")) if raw_date else date_type.today()
+                erschein = datum_in.value or date_type.today()
 
                 with Session(engine) as session:
                     kat_ids = [
@@ -409,23 +472,26 @@ def _create_vorstellung_dialog(film_id: UUID, account_id: UUID | None, on_done) 
 
         ort_in = ui.input("Ort", value="Zürich").classes("w-full").props("outlined dark color=amber")
         saal_in = ui.input("Saal", value="Saal 1").classes("w-full mt-3").props("outlined dark color=amber")
-        ui.label("Startzeit").classes("text-gray-400 text-sm mt-3")
-        start_date = ui.date().classes("w-full")
-        start_time = ui.time(value="19:30").classes("w-full mt-2")
-        ui.label("Endzeit (optional)").classes("text-gray-400 text-sm mt-3")
-        end_date = ui.date().classes("w-full")
-        end_time = ui.time(value="21:30").classes("w-full mt-2")
+        with ui.row().classes("w-full gap-3 mt-3"):
+            start_date = ui.date_input("Startdatum", value=date.today()).props("outlined dark color=amber").classes("flex-1")
+            start_time = ui.time(value="19:30").classes("w-28")
+        with ui.row().classes("w-full gap-3 mt-2"):
+            end_date = ui.date_input("Enddatum (optional)").props("outlined dark color=amber").classes("flex-1")
+            end_time = ui.time(value="21:30").classes("w-28")
 
         err = ui.label("").classes("text-red-400 text-sm mt-2")
 
         def create() -> None:
             try:
-                raw_start = f"{(start_date.value or '').replace('/', '-')} {start_time.value or '19:30'}"
-                startzeit = datetime.fromisoformat(raw_start)
+                if not start_date.value:
+                    err.set_text("Bitte Startdatum angeben.")
+                    return
+                start_time_obj = datetime.strptime(start_time.value or "19:30", "%H:%M").time()
+                startzeit = datetime.combine(start_date.value, start_time_obj)
                 endzeit = None
                 if end_date.value:
-                    raw_end = f"{end_date.value.replace('/', '-')} {end_time.value or '21:30'}"
-                    endzeit = datetime.fromisoformat(raw_end)
+                    end_time_obj = datetime.strptime(end_time.value or "21:30", "%H:%M").time()
+                    endzeit = datetime.combine(end_date.value, end_time_obj)
                 svc.admin_service().create_vorstellung(
                     account_id=account_id,
                     film_id=film_id,
@@ -458,18 +524,21 @@ def _edit_vorstellung_dialog(vorstellung_id: UUID, account_id: UUID | None, on_d
 
         ort_in = ui.input("Ort", value=v.ort or "").classes("w-full").props("outlined dark color=amber")
         saal_in = ui.input("Saal", value=v.saal or "").classes("w-full mt-3").props("outlined dark color=amber")
-        ui.label("Startzeit").classes("text-gray-400 text-sm mt-3")
-        start_date_val = v.startzeit.strftime("%Y/%m/%d") if v.startzeit else ""
+        start_date_val = v.startzeit.date() if v.startzeit else date.today()
         start_time_val = v.startzeit.strftime("%H:%M") if v.startzeit else "19:30"
-        start_date = ui.date(value=start_date_val).classes("w-full")
-        start_time = ui.time(value=start_time_val).classes("w-full mt-2")
+        with ui.row().classes("w-full gap-3 mt-3"):
+            start_date = ui.date_input("Startdatum", value=start_date_val).props("outlined dark color=amber").classes("flex-1")
+            start_time = ui.time(value=start_time_val).classes("w-28")
 
         err = ui.label("").classes("text-red-400 text-sm mt-2")
 
         def save() -> None:
             try:
-                raw_start = f"{(start_date.value or '').replace('/', '-')} {start_time.value or '19:30'}"
-                startzeit = datetime.fromisoformat(raw_start)
+                if not start_date.value:
+                    err.set_text("Bitte Startdatum angeben.")
+                    return
+                start_time_obj = datetime.strptime(start_time.value or "19:30", "%H:%M").time()
+                startzeit = datetime.combine(start_date.value, start_time_obj)
                 svc.admin_service().update_vorstellung(
                     account_id=account_id,
                     vorstellung_id=vorstellung_id,

@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from nicegui import ui
 
@@ -42,8 +42,11 @@ def register_page() -> None:
                 plz_in = ui.input("PLZ").props("outlined dark color=amber").classes("w-28")
                 tel_in = ui.input("Telefonnummer").props("outlined dark color=amber").classes("flex-1")
 
-            ui.label("Geburtsdatum").classes("text-gray-400 text-sm mt-3")
-            geb_in = ui.date(value="2000/01/01").classes("w-full")
+            geb_in = (
+                ui.input("Geburtsdatum (TT.MM.JJJJ)", placeholder="z. B. 15.06.1995")
+                .classes("w-full mt-3")
+                .props("outlined dark color=amber")
+            )
 
             zahlung_sel = (
                 ui.select(
@@ -60,8 +63,15 @@ def register_page() -> None:
             def do_register() -> None:
                 err.set_text("")
                 try:
-                    raw_date = geb_in.value or "2000/01/01"
-                    geb_date = date.fromisoformat(raw_date.replace("/", "-"))
+                    raw_date = (geb_in.value or "").strip()
+                    if not raw_date:
+                        err.set_text("Bitte Geburtsdatum eingeben.")
+                        return
+                    try:
+                        geb_date = datetime.strptime(raw_date, "%d.%m.%Y").date()
+                    except ValueError:
+                        err.set_text("Datum ungültig – bitte Format TT.MM.JJJJ verwenden (z. B. 15.06.1995).")
+                        return
                     data = {
                         "email": email_in.value.strip(),
                         "passwort": pwd_in.value,

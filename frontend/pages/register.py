@@ -40,7 +40,8 @@ def register_page() -> None:
 
             with ui.row().classes("w-full gap-3 mt-3"):
                 plz_in = ui.input("PLZ").props("outlined dark color=amber").classes("w-28")
-                tel_in = ui.input("Telefonnummer").props("outlined dark color=amber").classes("flex-1")
+                ort_in = ui.input("Ort").props("outlined dark color=amber").classes("flex-1")
+            tel_in = ui.input("Telefonnummer").classes("w-full mt-3").props("outlined dark color=amber")
 
             geb_in = (
                 ui.input("Geburtsdatum (TT.MM.JJJJ)", placeholder="z. B. 15.06.1995")
@@ -79,6 +80,7 @@ def register_page() -> None:
                         "nachname": nachname_in.value.strip(),
                         "adresse": adresse_in.value.strip(),
                         "plz": plz_in.value.strip(),
+                        "ort": ort_in.value.strip(),
                         "geburtsdatum": geb_date,
                         "telefonnummer": tel_in.value.strip(),
                         "zahlungsart": zahlung_sel.value,

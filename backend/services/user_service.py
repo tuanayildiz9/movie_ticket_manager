@@ -44,6 +44,7 @@ class UserService:
             nachname=self._require_text(data.get("nachname", ""), "Nachname"),
             adresse=str(data.get("adresse", "")),
             plz=str(data.get("plz", "")),
+            ort=str(data.get("ort", "")),
             geburtsdatum=geburtsdatum,
             telefonnummer=str(data.get("telefonnummer", "")),
             zahlungsart=zahlungsart,

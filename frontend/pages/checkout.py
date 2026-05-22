@@ -170,35 +170,70 @@ def checkout_page(request: Request, vorstellung_id: str) -> None:
 
             # Gewählter Sitzplatz
             if ts["seat_label"]:
-                ui.label(f"✓ {ts['seat_label']}").classes("text-green-400 text-sm mb-2 font-semibold")
+                ui.label(f"✓ {ts['seat_label']}").classes("text-green-400 text-sm mb-3 font-semibold")
             else:
-                ui.label("Kein Sitzplatz ausgewählt").classes("text-gray-500 text-sm mb-2")
+                ui.label("Kein Sitzplatz ausgewählt").classes("text-gray-500 text-sm mb-3")
 
-            # Sitzplatz-Auswahl
+            # ── Kinosaalsitzplan ─────────────────────────────────────────
             if not available_seats:
                 ui.label("Keine freien Sitzplätze verfügbar.").classes("text-red-400 text-sm")
             else:
-                for sektor, seats in sektoren.items():
-                    ui.label(f"Reihe {sektor}").classes("text-gray-400 text-xs font-semibold uppercase mt-2")
-                    with ui.row().classes("flex-wrap gap-1"):
-                        for seat in seats:
-                            sid = seat["sitzplatz_id"]
-                            is_selected = sid == ts["seat_id"]
-                            is_taken_by_other = sid in taken and not is_selected
+                with ui.column().classes("items-center w-full gap-1"):
+                    # Leinwand
+                    ui.label("Leinwand").classes("text-gray-400 text-xs tracking-widest mb-1")
+                    ui.element("div").classes("w-48 h-1 bg-gray-500 rounded-full mb-3")
 
-                            if is_taken_by_other:
-                                ui.button(seat["sitz_label"]).props(
-                                    "disable dense outline color=gray"
-                                ).classes("min-w-10 opacity-30 text-xs")
-                            else:
-                                btn_props = ("unelevated color=amber" if is_selected else "outline color=amber") + " dense"
-                                ui.button(
-                                    seat["sitz_label"],
-                                    on_click=lambda s=seat, i=idx: select_seat(i, s),
-                                ).props(btn_props).classes("min-w-10 text-xs")
+                    # Sitzreihen – alphabetisch sortiert
+                    for sektor in sorted(sektoren.keys()):
+                        seats_in_row = sorted(
+                            sektoren[sektor],
+                            key=lambda s: int("".join(filter(str.isdigit, s["sitz_label"])) or "0"),
+                        )
+                        with ui.row().classes("items-center gap-1"):
+                            # Reihen-Label
+                            ui.label(sektor).classes(
+                                "text-gray-400 text-xs font-bold w-4 text-center mr-1"
+                            )
+                            for seat in seats_in_row:
+                                sid = seat["sitzplatz_id"]
+                                is_selected = sid == ts["seat_id"]
+                                is_taken = sid in taken and not is_selected
+
+                                if is_taken:
+                                    icon_color = "color: #6B7280"   # grau – besetzt
+                                    clickable = False
+                                elif is_selected:
+                                    icon_color = "color: #22C55E"   # grün – ausgewählt
+                                    clickable = True
+                                else:
+                                    icon_color = "color: #3B82F6"   # blau – verfügbar
+                                    clickable = True
+
+                                btn = (
+                                    ui.button(icon="event_seat")
+                                    .props("flat dense round")
+                                    .style(f"{icon_color}; font-size: 22px; width: 28px; height: 28px;")
+                                )
+                                if clickable:
+                                    btn.on("click", lambda s=seat, i=idx: select_seat(i, s))
+                                else:
+                                    btn.props("disable")
+
+                    # Legende
+                    with ui.row().classes("gap-6 mt-4 justify-center"):
+                        for color, label_text in [
+                            ("#3B82F6", "Verfügbar"),
+                            ("#22C55E", "Ausgewählt"),
+                            ("#6B7280", "Besetzt"),
+                        ]:
+                            with ui.row().classes("items-center gap-1"):
+                                ui.icon("event_seat").style(
+                                    f"color: {color}; font-size: 18px;"
+                                )
+                                ui.label(label_text).classes("text-gray-300 text-xs")
 
             # Vergünstigung
-            ui.label("Vergünstigung").classes("text-gray-400 text-xs font-semibold uppercase mt-3 mb-1")
+            ui.label("Vergünstigung").classes("text-gray-400 text-xs font-semibold uppercase mt-4 mb-1")
             (
                 ui.select(options=discount_opts, value=ts["discount"])
                 .props("outlined dark color=amber dense")

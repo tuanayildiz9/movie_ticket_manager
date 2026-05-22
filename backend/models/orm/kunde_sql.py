@@ -21,6 +21,7 @@ class Kunde(SQLModel, table=True):
     nachname: str = Field(default="")
     adresse: str = Field(default="")
     plz: str = Field(default="")
+    ort: str = Field(default="")
     geburtsdatum: date = Field(default_factory=date.today)
     telefonnummer: str = Field(default="")
     zahlungsart_id: UUID | None = Field(default=None, foreign_key="zahlungsart.zahlungsart_id")

@@ -37,6 +37,7 @@ class KundeRepository:
             nachname=row.nachname,
             adresse=row.adresse,
             plz=row.plz,
+            ort=row.ort,
             geburtsdatum=row.geburtsdatum,
             telefonnummer=row.telefonnummer,
             zahlungsart=zahlungsart,
@@ -78,6 +79,7 @@ class KundeRepository:
                 nachname=kunde.nachname,
                 adresse=kunde.adresse,
                 plz=kunde.plz,
+                ort=kunde.ort,
                 geburtsdatum=kunde.geburtsdatum,
                 telefonnummer=kunde.telefonnummer,
                 zahlungsart_id=zahlungsart_id,
@@ -110,6 +112,7 @@ class KundeRepository:
             row.nachname = kunde.nachname
             row.adresse = kunde.adresse
             row.plz = kunde.plz
+            row.ort = kunde.ort
             row.geburtsdatum = kunde.geburtsdatum
             row.telefonnummer = kunde.telefonnummer
             row.zahlungsart_id = self._ensure_payment_type(session, kunde.zahlungsart)

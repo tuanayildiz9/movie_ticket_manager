@@ -64,6 +64,7 @@ CUSTOMERS = [
         "nachname": "Muster",
         "adresse": "Bahnhofstrasse 1",
         "plz": "8001",
+        "ort": "Zürich",
         "geburtsdatum": date(1995, 4, 12),
         "telefonnummer": "+41 79 111 22 33",
         "email": "anna.muster@example.com",
@@ -75,6 +76,7 @@ CUSTOMERS = [
         "nachname": "Beispiel",
         "adresse": "Hauptstrasse 42",
         "plz": "3000",
+        "ort": "Bern",
         "geburtsdatum": date(1988, 10, 3),
         "telefonnummer": "+41 79 444 55 66",
         "email": "lukas.beispiel@example.com",
@@ -357,6 +359,7 @@ def _create_customers(session: Session, zahlungsarten: list[Zahlungsart]) -> lis
                 nachname=item["nachname"],
                 adresse=item["adresse"],
                 plz=item["plz"],
+                ort=item.get("ort", ""),
                 geburtsdatum=item["geburtsdatum"],
                 telefonnummer=item["telefonnummer"],
                 zahlungsart_id=zahlungsart_map[item["zahlungsart_name"]].zahlungsart_id,
@@ -443,7 +446,12 @@ def _create_vorstellungen_and_seats(
             session.flush()
         vorstellungen.append(vorstellung)
 
-    seat_plan = [("A1", "A"), ("A2", "A"), ("B1", "B"), ("B2", "B")]
+    # 8 Reihen (A–H) × 10 Sitze = 80 Plätze pro Vorstellung
+    seat_plan = [
+        (f"{reihe}{nummer}", reihe)
+        for reihe in "ABCDEFGH"
+        for nummer in range(1, 11)
+    ]
     for vorstellung in vorstellungen:
         for label, sektor in seat_plan:
             seat_row = session.exec(
@@ -451,8 +459,7 @@ def _create_vorstellungen_and_seats(
                     Sitzplatz.vorstellung_id == vorstellung.vorstellung_id,
                     Sitzplatz.sitz_label == label,
                 )
-            )
-            seat_row = seat_row.first()
+            ).first()
             if seat_row is None:
                 seat_row = Sitzplatz(
                     vorstellung_id=vorstellung.vorstellung_id,

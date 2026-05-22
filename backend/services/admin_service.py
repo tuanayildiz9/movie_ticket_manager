@@ -1,8 +1,10 @@
+from datetime import datetime
 from uuid import UUID
 
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from backend.models import Film
+from backend.models.orm.sitzplatz_sql import Sitzplatz as SitzplatzORM
 from backend.models.orm.vorstellung_sql import Vorstellung as VorstellungORM
 from backend.repositories.account_repository import AccountRepository
 from backend.repositories.bestellung_repository import BestellungRepository
@@ -64,32 +66,22 @@ class AdminService:
 
     def update_film(self, account_id: UUID, film_id: UUID, updates: dict) -> Film:
         self._require_admin(account_id)
-        film = self.film_repo.get_by_id(film_id)
-        if film is None:
-            raise ValueError("Film wurde nicht gefunden.")
-        # apply allowed updates
-        for key in [
-            "titel",
-            "beschreibung",
-            "altersfreigabe",
-            "coverbild_url",
-            "hauptdarsteller",
-            "erscheinungsdatum",
-            "basispreis",
-            "aktiv",
-            "sprache_ids",
-            "kategorie_ids",
-        ]:
-            if key in updates:
-                setattr(film, key, updates[key])
-        return self.film_repo.save(film)
+        return self.film_repo.update_metadata(film_id, updates)
 
     def delete_film(self, account_id: UUID, film_id: UUID) -> None:
         self._require_admin(account_id)
-        # Prevent deleting a film that already has sold tickets
-        orders = self.bestellung_repo.list_by_film(film_id)
-        if orders:
-            raise ValueError("Film kann nicht gelöscht werden: Es wurden bereits Tickets verkauft.")
+        now = datetime.utcnow()
+
+        future_vorstellungen = [
+            vorstellung
+            for vorstellung in self.film_repo.list_vorstellungen_by_film(film_id)
+            if vorstellung.startzeit and vorstellung.startzeit > now
+        ]
+        if future_vorstellungen:
+            raise ValueError("Film kann nicht gelöscht werden: Es gibt noch zukünftige Vorstellungen.")
+
+        if self.bestellung_repo.has_future_tickets_by_film(film_id, now):
+            raise ValueError("Film kann nicht gelöscht werden: Es gibt noch Tickets für zukünftige Vorstellungen.")
 
         self.film_repo.delete(film_id)
 
@@ -118,14 +110,18 @@ class AdminService:
 
     def delete_vorstellung(self, account_id: UUID, vorstellung_id: UUID) -> None:
         self._require_admin(account_id)
-        # Prevent deleting if tickets have already been sold for this showing
-        orders = self.bestellung_repo.list_by_vorstellung(vorstellung_id)
-        if orders:
-            raise ValueError("Vorstellung kann nicht gelöscht werden: Es wurden bereits Tickets verkauft.")
-
         with Session(engine) as session:
             row = session.get(VorstellungORM, vorstellung_id)
             if row is None:
                 return
+            if row.startzeit and row.startzeit > datetime.utcnow():
+                orders = self.bestellung_repo.list_by_vorstellung(vorstellung_id)
+                if orders:
+                    raise ValueError("Vorstellung kann nicht gelöscht werden: Es gibt bereits Tickets für eine zukünftige Vorstellung.")
+
+            self.bestellung_repo.delete_tickets_by_vorstellung(vorstellung_id)
+
+            for seat in session.exec(select(SitzplatzORM).where(SitzplatzORM.vorstellung_id == vorstellung_id)).all():
+                session.delete(seat)
             session.delete(row)
             session.commit()

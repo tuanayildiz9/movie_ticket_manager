@@ -2,16 +2,20 @@ from datetime import date, datetime
 from decimal import Decimal
 from uuid import UUID
 
+
+def _parse_date(val) -> date | None:
+    if val is None:
+        return None
+    if isinstance(val, date) and not isinstance(val, datetime):
+        return val
+    if isinstance(val, datetime):
+        return val.date()
+    try:
+        return date.fromisoformat(str(val))
+    except (ValueError, TypeError):
+        return None
+
 from nicegui import ui
-
-
-def _date_picker(label: str, value: date | None = None):
-    picker = ui.date_input(label, value=value)
-    return picker.props("outlined dark color=amber")
-
-
-def _time_picker(value: str):
-    return ui.time(value=value)
 
 
 import frontend.services as svc
@@ -487,27 +491,43 @@ def _create_vorstellung_dialog(film_id: UUID, account_id: UUID | None, on_done) 
         ort_in = ui.input("Ort", value="Zürich").classes("w-full").props("outlined dark color=amber")
         saal_in = ui.input("Saal", value="Saal 1").classes("w-full mt-3").props("outlined dark color=amber")
         with ui.row().classes("w-full gap-3 mt-3"):
-            start_date = ui.date_input("Startdatum", value=date.today()).props("outlined dark color=amber").classes("flex-1")
-            start_time = ui.time(value="19:30").classes("w-28")
-            start_date = _date_picker("Startdatum", value=date.today()).classes("flex-1")
-            start_time = _time_picker("19:30").classes("w-28")
+            start_date = (
+                ui.date_input("Startdatum", value=date.today())
+                .props("outlined dark color=amber")
+                .classes("flex-1")
+            )
+            start_time = (
+                ui.input("Startzeit", value="19:30")
+                .props("outlined dark color=amber type=time")
+                .classes("w-36")
+            )
         with ui.row().classes("w-full gap-3 mt-2"):
-            end_date = _date_picker("Enddatum (optional)").classes("flex-1")
-            end_time = _time_picker("21:30").classes("w-28")
+            end_date = (
+                ui.date_input("Enddatum (optional)")
+                .props("outlined dark color=amber")
+                .classes("flex-1")
+            )
+            end_time = (
+                ui.input("Endzeit", value="21:30")
+                .props("outlined dark color=amber type=time")
+                .classes("w-36")
+            )
 
         err = ui.label("").classes("text-red-400 text-sm mt-2")
 
         def create() -> None:
             try:
-                if not start_date.value:
+                parsed_start = _parse_date(start_date.value)
+                if not parsed_start:
                     err.set_text("Bitte Startdatum angeben.")
                     return
                 start_time_obj = datetime.strptime(start_time.value or "19:30", "%H:%M").time()
-                startzeit = datetime.combine(start_date.value, start_time_obj)
+                startzeit = datetime.combine(parsed_start, start_time_obj)
                 endzeit = None
-                if end_date.value:
+                parsed_end = _parse_date(end_date.value)
+                if parsed_end:
                     end_time_obj = datetime.strptime(end_time.value or "21:30", "%H:%M").time()
-                    endzeit = datetime.combine(end_date.value, end_time_obj)
+                    endzeit = datetime.combine(parsed_end, end_time_obj)
                 svc.admin_service().create_vorstellung(
                     account_id=account_id,
                     film_id=film_id,
@@ -543,20 +563,27 @@ def _edit_vorstellung_dialog(vorstellung_id: UUID, account_id: UUID | None, on_d
         start_date_val = v.startzeit.date() if v.startzeit else date.today()
         start_time_val = v.startzeit.strftime("%H:%M") if v.startzeit else "19:30"
         with ui.row().classes("w-full gap-3 mt-3"):
-            start_date = ui.date_input("Startdatum", value=start_date_val).props("outlined dark color=amber").classes("flex-1")
-            start_time = ui.time(value=start_time_val).classes("w-28")
-            start_date = _date_picker("Startdatum", value=start_date_val).classes("flex-1")
-            start_time = _time_picker(start_time_val).classes("w-28")
+            start_date = (
+                ui.date_input("Startdatum", value=start_date_val)
+                .props("outlined dark color=amber")
+                .classes("flex-1")
+            )
+            start_time = (
+                ui.input("Startzeit", value=start_time_val)
+                .props("outlined dark color=amber type=time")
+                .classes("w-36")
+            )
 
         err = ui.label("").classes("text-red-400 text-sm mt-2")
 
         def save() -> None:
             try:
-                if not start_date.value:
+                parsed_start = _parse_date(start_date.value)
+                if not parsed_start:
                     err.set_text("Bitte Startdatum angeben.")
                     return
                 start_time_obj = datetime.strptime(start_time.value or "19:30", "%H:%M").time()
-                startzeit = datetime.combine(start_date.value, start_time_obj)
+                startzeit = datetime.combine(parsed_start, start_time_obj)
                 svc.admin_service().update_vorstellung(
                     account_id=account_id,
                     vorstellung_id=vorstellung_id,

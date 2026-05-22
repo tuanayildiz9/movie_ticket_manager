@@ -49,6 +49,7 @@ def filme_page() -> None:
                 .props("outlined dark color=amber")
                 .classes("w-52")
             )
+            ui.button("Zurücksetzen", icon="clear", on_click=lambda: reset_filters()).props("flat color=amber")
 
         films_container = ui.element("div").classes("w-full")
 
@@ -92,23 +93,17 @@ def filme_page() -> None:
                                     "text-amber-400 text-sm font-semibold mt-1"
                                 )
 
-        def apply_filters() -> None:
+        def reset_filters() -> None:
+            search_in.set_value("")
+            kat_sel.set_value("")
+            spr_sel.set_value("")
+            sort_sel.set_value("titel")
             load_films()
 
-        with ui.row().classes("w-full gap-3 mb-6"):
-            ui.button("Suchen", icon="search", on_click=apply_filters).props("unelevated color=amber")
-            ui.button(
-                "Zurücksetzen",
-                icon="clear",
-                on_click=lambda: (
-                    search_in.set_value(""),
-                    kat_sel.set_value(""),
-                    spr_sel.set_value(""),
-                    sort_sel.set_value("titel"),
-                    load_films(),
-                ),
-            ).props("flat color=amber")
-
-        search_in.on("keydown.enter", apply_filters)
+        # Live-Filter: bei jeder Änderung sofort neu laden
+        search_in.on("input", lambda _: load_films())
+        kat_sel.on("update:model-value", lambda _: load_films())
+        spr_sel.on("update:model-value", lambda _: load_films())
+        sort_sel.on("update:model-value", lambda _: load_films())
 
         load_films()

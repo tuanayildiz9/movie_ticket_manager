@@ -13,6 +13,7 @@ class Kunde:
     nachname: str = ""
     adresse: str = ""
     plz: str = ""
+    ort: str = ""
     geburtsdatum: date = field(default_factory=date.today)
     telefonnummer: str = ""
     zahlungsart: Zahlungsart | None = None

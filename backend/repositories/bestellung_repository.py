@@ -8,6 +8,7 @@ from backend.models import Bestellung, Ticket, TicketSnack, Verguensigungsart
 from backend.models.orm.bestellung_sql import Bestellung as BestellungORM
 from backend.models.orm.ticket_snack_sql import TicketSnack as TicketSnackORM
 from backend.models.orm.ticket_sql import Ticket as TicketORM
+from backend.models.orm.vorstellung_sql import Vorstellung as VorstellungORM
 from config.database import engine
 
 class BestellungRepository:
@@ -119,6 +120,27 @@ class BestellungRepository:
                 if any(ticket.vorstellung_id == vorstellung_id for ticket in order.tickets):
                     result.append(order)
             return result
+
+    def has_future_tickets_by_film(self, film_id: UUID, reference_time: datetime) -> bool:
+        with Session(engine) as session:
+            stmt = (
+                select(TicketORM)
+                .join(VorstellungORM, TicketORM.vorstellung_id == VorstellungORM.vorstellung_id)
+                .where(TicketORM.film_id == film_id, VorstellungORM.startzeit > reference_time)
+                .limit(1)
+            )
+            return session.exec(stmt).first() is not None
+
+    def delete_tickets_by_vorstellung(self, vorstellung_id: UUID) -> None:
+        with Session(engine) as session:
+            ticket_ids = select(TicketORM.ticket_id).where(TicketORM.vorstellung_id == vorstellung_id)
+            for snack_line in session.exec(
+                select(TicketSnackORM).where(TicketSnackORM.ticket_id.in_(ticket_ids))
+            ).all():
+                session.delete(snack_line)
+            for ticket in session.exec(select(TicketORM).where(TicketORM.vorstellung_id == vorstellung_id)).all():
+                session.delete(ticket)
+            session.commit()
 
     def list_all(self) -> list[Bestellung]:
         with Session(engine) as session:

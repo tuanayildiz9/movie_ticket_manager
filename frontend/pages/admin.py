@@ -4,10 +4,28 @@ from uuid import UUID
 
 from nicegui import ui
 
+
+def _date_picker(label: str, value: date | None = None):
+    picker = ui.date_input(label, value=value)
+    return picker.props("outlined dark color=amber")
+
+
+def _time_picker(value: str):
+    return ui.time(value=value)
+
+
 import frontend.services as svc
 from frontend.auth import get_account_id, is_admin, is_logged_in
 from frontend.components import navbar
 from backend.models import Film
+
+
+def _format_admin_date(value: date | datetime | None) -> str:
+    if not value:
+        return "–"
+    if isinstance(value, datetime):
+        value = value.date()
+    return value.strftime("%d.%m.%Y")
 
 
 @ui.page("/admin")
@@ -60,7 +78,7 @@ def _filme_tab(account_id: UUID | None) -> None:
                     "titel": f.titel,
                     "altersfreigabe": f.altersfreigabe,
                     "basispreis": f"CHF {f.basispreis:.2f}",
-                    "erscheinungsdatum": str(f.erscheinungsdatum) if f.erscheinungsdatum else "–",
+                    "erscheinungsdatum": _format_admin_date(f.erscheinungsdatum),
                     "aktiv": "✓" if f.aktiv else "✗",
                 }
                 for f in all_films
@@ -74,9 +92,9 @@ def _filme_tab(account_id: UUID | None) -> None:
                 r"""
                 <q-td :props="props">
                     <q-btn flat dense icon="edit" color="amber"
-                        @click="$emit('edit', props.row)" />
+                        @click="$parent.$emit('edit', props.row)" />
                     <q-btn flat dense icon="delete" color="red"
-                        @click="$emit('delete', props.row)" />
+                        @click="$parent.$emit('delete', props.row)" />
                 </q-td>
                 """,
             )
@@ -306,11 +324,7 @@ def _create_film_dialog(account_id: UUID | None, on_done) -> None:
                 "outlined dark color=amber"
             ).classes("flex-1")
 
-        datum_in = (
-            ui.date_input("Erscheinungsdatum", value=date.today())
-            .classes("w-full mt-3")
-            .props("outlined dark color=amber")
-        )
+        datum_in = _date_picker("Erscheinungsdatum", value=date.today()).classes("w-full mt-3")
 
         kat_sel = (
             ui.select(
@@ -475,9 +489,11 @@ def _create_vorstellung_dialog(film_id: UUID, account_id: UUID | None, on_done) 
         with ui.row().classes("w-full gap-3 mt-3"):
             start_date = ui.date_input("Startdatum", value=date.today()).props("outlined dark color=amber").classes("flex-1")
             start_time = ui.time(value="19:30").classes("w-28")
+            start_date = _date_picker("Startdatum", value=date.today()).classes("flex-1")
+            start_time = _time_picker("19:30").classes("w-28")
         with ui.row().classes("w-full gap-3 mt-2"):
-            end_date = ui.date_input("Enddatum (optional)").props("outlined dark color=amber").classes("flex-1")
-            end_time = ui.time(value="21:30").classes("w-28")
+            end_date = _date_picker("Enddatum (optional)").classes("flex-1")
+            end_time = _time_picker("21:30").classes("w-28")
 
         err = ui.label("").classes("text-red-400 text-sm mt-2")
 
@@ -529,6 +545,8 @@ def _edit_vorstellung_dialog(vorstellung_id: UUID, account_id: UUID | None, on_d
         with ui.row().classes("w-full gap-3 mt-3"):
             start_date = ui.date_input("Startdatum", value=start_date_val).props("outlined dark color=amber").classes("flex-1")
             start_time = ui.time(value=start_time_val).classes("w-28")
+            start_date = _date_picker("Startdatum", value=start_date_val).classes("flex-1")
+            start_time = _time_picker(start_time_val).classes("w-28")
 
         err = ui.label("").classes("text-red-400 text-sm mt-2")
 

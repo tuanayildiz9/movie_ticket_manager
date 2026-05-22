@@ -8,10 +8,13 @@ from backend.models import Film, Sitzplatz, Vorstellung
 from backend.models.orm.film_kategorie_sql import FilmKategorie
 from backend.models.orm.film_sprache_sql import FilmSprache
 from backend.models.orm.film_sql import Film as FilmORM
+from backend.models.orm.bewertung_sql import Bewertung as BewertungORM
 from backend.models.orm.filmliste_kunde_sql import FilmlisteKunde
 from backend.models.orm.kategorie_sql import Kategorie
 from backend.models.orm.sitzplatz_sql import Sitzplatz as SitzplatzORM
 from backend.models.orm.sprache_sql import Sprache
+from backend.models.orm.ticket_snack_sql import TicketSnack as TicketSnackORM
+from backend.models.orm.ticket_sql import Ticket as TicketORM
 from backend.models.orm.vorstellung_sql import Vorstellung as VorstellungORM
 from config.database import engine
 
@@ -77,6 +80,7 @@ class FilmRepository:
         sprache_id = filter_data.get("sprache_id") if isinstance(filter_data.get("sprache_id"), UUID) else None
         kategorie_id = filter_data.get("kategorie_id") if isinstance(filter_data.get("kategorie_id"), UUID) else None
         max_altersfreigabe = filter_data.get("max_altersfreigabe") if isinstance(filter_data.get("max_altersfreigabe"), int) else None
+        aktiv = filter_data.get("aktiv") if isinstance(filter_data.get("aktiv"), bool) else None
 
         films = self.list_all()
         films = [
@@ -89,6 +93,8 @@ class FilmRepository:
                 max_altersfreigabe=max_altersfreigabe,
             )
         ]
+        if aktiv is not None:
+            films = [film for film in films if film.aktiv is aktiv]
         if sort:
             reverse = sort.startswith("-")
             sort_field = sort[1:] if reverse else sort
@@ -197,11 +203,45 @@ class FilmRepository:
             session.refresh(existing)
             return self._to_domain(session, existing)
 
+    def update_metadata(self, film_id: UUID, updates: dict[str, object]) -> Film:
+        with Session(engine) as session:
+            existing = session.get(FilmORM, film_id)
+            if existing is None:
+                raise ValueError("Film wurde nicht gefunden.")
+
+            for key in [
+                "titel",
+                "beschreibung",
+                "altersfreigabe",
+                "coverbild_url",
+                "hauptdarsteller",
+                "erscheinungsdatum",
+                "basispreis",
+                "aktiv",
+            ]:
+                if key in updates:
+                    setattr(existing, key, updates[key])
+
+            session.add(existing)
+            session.commit()
+            session.refresh(existing)
+            return self._to_domain(session, existing)
+
     def delete(self, film_id: UUID) -> None:
         with Session(engine) as session:
             row = session.get(FilmORM, film_id)
             if row is None:
                 return
+            for rating in session.exec(select(BewertungORM).where(BewertungORM.film_id == film_id)).all():
+                session.delete(rating)
+            for snack_line in session.exec(
+                select(TicketSnackORM).where(
+                    TicketSnackORM.ticket_id.in_(select(TicketORM.ticket_id).where(TicketORM.film_id == film_id))
+                )
+            ).all():
+                session.delete(snack_line)
+            for ticket in session.exec(select(TicketORM).where(TicketORM.film_id == film_id)).all():
+                session.delete(ticket)
             for link in session.exec(select(FilmlisteKunde).where(FilmlisteKunde.film_id == film_id)).all():
                 session.delete(link)
             for link in session.exec(select(FilmSprache).where(FilmSprache.film_id == film_id)).all():

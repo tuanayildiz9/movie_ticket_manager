@@ -58,6 +58,7 @@ def filme_page() -> None:
                 search_term=search_in.value or None,
                 kategorie_name=kat_sel.value or None,
                 sprache_name=spr_sel.value or None,
+                only_active=True,
                 sort=sort_sel.value,
                 size=60,
             )

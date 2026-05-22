@@ -18,6 +18,9 @@ env/
 *.db
 *.sqlite3
 
+# Claude Code internal
+.claude/worktrees/
+
 # IDE
 .vscode/
 .idea/

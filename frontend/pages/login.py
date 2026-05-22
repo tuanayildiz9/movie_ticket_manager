@@ -36,19 +36,22 @@ def login_page() -> None:
                     if account is None:
                         err.set_text("E-Mail oder Passwort falsch.")
                         return
+
+                    kunde_id_str = ""
+                    if account.rolle != "admin":
+                        kunde = svc.user_service().get_profile_by_account_id(account.account_id)
+                        if kunde:
+                            kunde_id_str = str(kunde.kunde_id)
+
                     app.storage.user.update(
                         {
                             "logged_in": True,
                             "account_id": str(account.account_id),
                             "is_admin": account.rolle == "admin",
                             "email": account.email,
-                            "kunde_id": None,
+                            "kunde_id": kunde_id_str,
                         }
                     )
-                    if account.rolle != "admin":
-                        kunde = svc.user_service().get_profile_by_account_id(account.account_id)
-                        if kunde:
-                            app.storage.user["kunde_id"] = str(kunde.kunde_id)
                     ui.navigate.to("/")
                 except Exception as e:
                     err.set_text(str(e))

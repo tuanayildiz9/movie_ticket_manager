@@ -83,6 +83,18 @@ CUSTOMERS = [
         "passwort": "lukas123",
         "zahlungsart_name": "Kreditkarte",
     },
+    {
+        "vorname": "Danijela",
+        "nachname": "D",
+        "adresse": "Musterstrasse 1",
+        "plz": "4000",
+        "ort": "Basel",
+        "geburtsdatum": date(2003, 1, 1),
+        "telefonnummer": "",
+        "email": "danijelad.03@hotmail.com",
+        "passwort": "Dani2024",
+        "zahlungsart_name": "Kreditkarte",
+    },
 ]
 
 ADMIN_ACCOUNT = {

@@ -7,7 +7,7 @@ def navbar() -> None:
     with ui.header().classes("bg-gray-900 border-b border-gray-700"):
         with ui.row().classes("w-full max-w-6xl mx-auto items-center justify-between px-4 h-16"):
             with ui.link(target="/").classes("no-underline"):
-                ui.label("🎬 MoviTicket").classes("text-amber-400 text-xl font-bold")
+                ui.label("🎬 MovieTicket").classes("text-amber-400 text-xl font-bold")
             with ui.row().classes("items-center gap-6"):
                 if is_logged_in():
                     ui.link("Filme", "/").classes("text-gray-300 hover:text-white text-sm no-underline")

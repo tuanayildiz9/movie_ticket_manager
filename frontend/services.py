@@ -76,6 +76,23 @@ def get_kategorie_names(ids: list[UUID]) -> list[str]:
         return names
 
 
+def get_all_seats_for_vorstellung(vorstellung_id: UUID) -> list[dict]:
+    """Alle Sitze einer Vorstellung – inkl. bereits belegter (für Saalplan)."""
+    with Session(engine) as session:
+        rows = session.exec(
+            select(SitzplatzORM).where(SitzplatzORM.vorstellung_id == vorstellung_id)
+        ).all()
+        return [
+            {
+                "sitzplatz_id": row.sitzplatz_id,
+                "sitz_label": row.sitz_label,
+                "sektor": row.sektor,
+                "besetzt": row.besetzt,
+            }
+            for row in rows
+        ]
+
+
 def get_sitzplatz_info(sitzplatz_id: UUID) -> dict | None:
     with Session(engine) as session:
         row = session.get(SitzplatzORM, sitzplatz_id)

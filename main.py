@@ -45,7 +45,7 @@ if __name__ in {"__main__", "__mp_main__"}:
     svc_container.init_services(user_svc, film_svc, bestellung_svc, admin_svc, snack_r, bestellung_r)
 
     ui.run(
-        title="MoviTicket",
+        title="MovieTicket",
         port=8080,
         dark=True,
         storage_secret="movticket-secret-2024",

@@ -154,13 +154,51 @@ Nach jedem Ticketkauf erhält der Kunde automatisch eine Bestellübersicht mit f
 ---
 
 ## Datenbank und ORM
+<img width="5328" height="5564" alt="image" src="https://github.com/user-attachments/assets/0ad26bb0-b85c-4b19-819e-6b3ac5218ae5" />
+
 
 ### Einheiten
-- Tickets
-- Filme
-- Sitzplätze
+- Ticket
+- Film
+- Sitzplatz
+- Account
+- Kunde
+- Kategorie
+- Sprache
+- Zahlungsart
+- Bestellung
+- Vorstellung
+- Snack
+- Bewertung
   
 ### Beziehungen
+- Ein Kunde kann mehrere Bewertungen erstellen.
+- Jede Bewertung wird von genau einem Kunden erstellt.
+- Ein Film kann mehrere Bewertungen haben.
+- Jede Bewertung gehört genau zu einem Film.
+- Ein Film hat eine Sprache.
+- Eine Sprache kann mehreren Filmen zugeordnet sein.
+- Ein Film gehört zu einer Kategorie.
+- Eine Kategorie kann mehrere Filme enthalten.
+- Ein Admin-Account kann mehrere Filme verwalten.
+- Ein Film kann von einem Admin-Account verwaltet werden.
+- Ein Admin-Account kann mehrere Vorstellungen verwalten.
+- Eine Vorstellung wird von einem Admin-Account verwaltet.
+- Eine Vorstellung hat mehrere Sitzplätze.
+- Ein Sitzplatz gehört zu genau einer Vorstellung.
+- Ein Kunde wählt eine Zahlungsart.
+- Eine Zahlungsart kann von mehreren Kunden verwendet werden.
+- Ein Kunde kann mehrere Bestellungen machen.
+- Jede Bestellung gehört genau zu einem Kunden.
+- Eine Bestellung beinhaltet mehrere Tickets.
+- Ein Ticket gehört genau zu einer Bestellung.
+- Ein Ticket kann mehrere Snacks beinhalten.
+- Ein Snack kann in mehreren Tickets enthalten sein.
+- Eine Vorstellung kann mehrere Tickets haben.
+- Jedes Ticket gehört zu genau einer Vorstellung.
+- Ein Film kann mehrere Vorstellungen haben.
+- Eine Vorstellung zeigt genau einen Film.
+
 
 ---
 

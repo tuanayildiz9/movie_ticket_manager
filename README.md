@@ -142,14 +142,25 @@ Nach jedem Ticketkauf erhält der Kunde automatisch eine Bestellübersicht mit f
 ---
 
 ## Architektur
-(Bild)
+<img width="3368" height="1724" alt="image" src="https://github.com/user-attachments/assets/be67a122-66b0-49b1-b1cb-4a5317c641ae" />
+
 
 ### Schichten
-
+- Frontend: UI/Benutzerinteraktion mittels NiceGUI
+- Backend: Businesslogik mittels Services
+- Datenpersistenz: Repositories, SQLite, ORM und DAO 
 
 ### Designentscheidung
+- MVC Struktur (Model-View-Controller) -> in unserem Fall Services statt Controller
+- Mittels MVC hat man eine klare Struktur und Gliederung der drei Schichten
 
 ### Verwendete Designmuster
+- Das Frontend kommuniziert ausschließlich mit den Service-Klassen und greift nicht direkt auf die Datenbank bzw. die Repository-Schicht zu. Dadurch bleibt die Anwendung klar strukturiert und die Verantwortlichkeiten sind sauber getrennt.
+- Die Service-Klassen enthalten die gesamte Businesslogik der Anwendung. Sie verarbeiten Anfragen aus dem Frontend, führen Validierungen durch und koordinieren den Zugriff auf die Daten.
+- Im Frontend ist die gesamte Benutzerinteraktion implementiert. Dazu gehören die Darstellung der Benutzeroberfläche, Eingaben der Benutzer sowie die Kommunikation mit dem Backend.
+- Die Service-Schicht verwendet die Repository-Klassen für den Zugriff auf die Datenbank.
+- Die Repository-Klassen kapseln sämtliche Datenbankoperationen (CRUD – Create, Read, Update, Delete). Dadurch bleibt der Datenzugriff zentral verwaltet und unabhängig von der Businesslogik.
+- Die Model-Klassen definieren die ORM-Modelle und bilden die Struktur der Datenbanktabellen ab. Sie repräsentieren die zentralen Datenobjekte der Anwendung.
 
 ---
 

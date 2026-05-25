@@ -6,7 +6,6 @@ from .enums import Verguensigungsart
 from .film import Film
 from .film_kategorie import FilmKategorie
 from .film_sprache import FilmSprache
-from .filmliste_kunde import FilmlisteKunde
 from .kategorie import Kategorie
 from .kunde import Kunde
 from .kunden_kategorie_praeferenz import KundenKategoriePraeferenz
@@ -25,7 +24,6 @@ __all__ = [
     "Film",
     "FilmKategorie",
     "FilmSprache",
-    "FilmlisteKunde",
     "Kategorie",
     "Kunde",
     "KundenKategoriePraeferenz",

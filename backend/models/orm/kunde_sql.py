@@ -5,8 +5,6 @@ from sqlmodel import Field, Relationship, SQLModel
 
 from .bestellung_sql import Bestellung
 from .bewertung_sql import Bewertung
-from .film_sql import Film
-from .filmliste_kunde_sql import FilmlisteKunde
 from .kategorie_sql import Kategorie
 from .kunden_kategorie_praeferenz_sql import KundenKategoriePraeferenz
 from .zahlungsart_sql import Zahlungsart
@@ -27,7 +25,6 @@ class Kunde(SQLModel, table=True):
     zahlungsart_id: UUID | None = Field(default=None, foreign_key="zahlungsart.zahlungsart_id")
 
     zahlungsart: Zahlungsart = Relationship(back_populates="kunden")
-    gespeicherte_filme: list[Film] = Relationship(back_populates="gespeichert_von", link_model=FilmlisteKunde)
     kategorien_praeferenzen: list[Kategorie] = Relationship(
         back_populates="interessenten",
         link_model=KundenKategoriePraeferenz,

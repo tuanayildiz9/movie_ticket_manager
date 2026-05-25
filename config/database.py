@@ -8,6 +8,7 @@ engine = create_engine(DATABASE_URL, echo=False)
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
     _migrate_account_split()
+    _drop_legacy_tables()
 
 
 def _migrate_account_split() -> None:
@@ -46,6 +47,11 @@ def _migrate_account_split() -> None:
                 "UPDATE kunde SET account_id = ? WHERE kunde_id = ?",
                 (resolved_account_id, kunde_id),
             )
+
+
+def _drop_legacy_tables() -> None:
+    with engine.begin() as connection:
+        connection.exec_driver_sql("DROP TABLE IF EXISTS filmliste_kunde")
 
 def get_session():
     with Session(engine) as session:

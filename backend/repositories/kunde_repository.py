@@ -4,7 +4,6 @@ from uuid import UUID
 from sqlmodel import Session, select
 
 from backend.models import Kunde, Zahlungsart
-from backend.models.orm.filmliste_kunde_sql import FilmlisteKunde
 from backend.models.orm.kunde_sql import Kunde as KundeORM
 from backend.models.orm.kunden_kategorie_praeferenz_sql import KundenKategoriePraeferenz
 from backend.models.orm.zahlungsart_sql import Zahlungsart as ZahlungsartORM
@@ -18,11 +17,6 @@ class KundeRepository:
             payment_row = session.get(ZahlungsartORM, row.zahlungsart_id)
             if payment_row is not None:
                 zahlungsart = Zahlungsart(zahlungsart_id=payment_row.zahlungsart_id, name=payment_row.name)
-
-        gespeicherte_filme = [
-            link.film_id
-            for link in session.exec(select(FilmlisteKunde).where(FilmlisteKunde.kunde_id == row.kunde_id)).all()
-        ]
         kategorien_praeferenzen = [
             link.kategorie_id
             for link in session.exec(
@@ -41,7 +35,6 @@ class KundeRepository:
             geburtsdatum=row.geburtsdatum,
             telefonnummer=row.telefonnummer,
             zahlungsart=zahlungsart,
-            gespeicherte_filme=gespeicherte_filme,
             kategorien_praeferenzen=kategorien_praeferenzen,
         )
 
@@ -59,13 +52,8 @@ class KundeRepository:
         return row.zahlungsart_id
 
     def _sync_preferences(self, session: Session, kunde: Kunde) -> None:
-        for link in session.exec(select(FilmlisteKunde).where(FilmlisteKunde.kunde_id == kunde.kunde_id)).all():
-            session.delete(link)
         for link in session.exec(select(KundenKategoriePraeferenz).where(KundenKategoriePraeferenz.kunde_id == kunde.kunde_id)).all():
             session.delete(link)
-
-        for film_id in kunde.gespeicherte_filme:
-            session.add(FilmlisteKunde(kunde_id=kunde.kunde_id, film_id=film_id))
         for kategorie_id in kunde.kategorien_praeferenzen:
             session.add(KundenKategoriePraeferenz(kunde_id=kunde.kunde_id, kategorie_id=kategorie_id))
 
@@ -116,14 +104,8 @@ class KundeRepository:
             row.geburtsdatum = kunde.geburtsdatum
             row.telefonnummer = kunde.telefonnummer
             row.zahlungsart_id = self._ensure_payment_type(session, kunde.zahlungsart)
-
-            for link in session.exec(select(FilmlisteKunde).where(FilmlisteKunde.kunde_id == kunde.kunde_id)).all():
-                session.delete(link)
             for link in session.exec(select(KundenKategoriePraeferenz).where(KundenKategoriePraeferenz.kunde_id == kunde.kunde_id)).all():
                 session.delete(link)
-
-            for film_id in kunde.gespeicherte_filme:
-                session.add(FilmlisteKunde(kunde_id=kunde.kunde_id, film_id=film_id))
             for kategorie_id in kunde.kategorien_praeferenzen:
                 session.add(KundenKategoriePraeferenz(kunde_id=kunde.kunde_id, kategorie_id=kategorie_id))
 
@@ -137,8 +119,6 @@ class KundeRepository:
             row = session.get(KundeORM, kunde_id)
             if row is None:
                 return
-            for link in session.exec(select(FilmlisteKunde).where(FilmlisteKunde.kunde_id == kunde_id)).all():
-                session.delete(link)
             for link in session.exec(select(KundenKategoriePraeferenz).where(KundenKategoriePraeferenz.kunde_id == kunde_id)).all():
                 session.delete(link)
             session.delete(row)

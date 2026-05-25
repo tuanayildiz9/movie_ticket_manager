@@ -13,7 +13,6 @@ from backend.models.orm import (
     FilmKategorie,
     FilmSprache,
     Film,
-    FilmlisteKunde,
     Kategorie,
     Kunde,
     KundenKategoriePraeferenz,
@@ -281,7 +280,7 @@ def seed_database() -> None:
         filme = _create_films(session, kategorien, sprachen)
         vorstellungen, sitzplaetze = _create_vorstellungen_and_seats(session, filme)
 
-        _create_association_rows(session, kunden, filme, kategorien, sprachen)
+        _create_association_rows(session, kunden, kategorien)
         bestellungen, tickets = _create_orders_and_tickets(session, kunden, filme, vorstellungen, sitzplaetze)
         _create_ticket_snacks(session, tickets, snacks)
         _create_ratings(session, kunden, filme)
@@ -488,30 +487,19 @@ def _create_vorstellungen_and_seats(
 def _create_association_rows(
     session: Session,
     kunden: list[Kunde],
-    filme: list[Film],
     kategorien: list[Kategorie],
-    sprachen: list[Sprache],
 ) -> None:
     items = [
         KundenKategoriePraeferenz(kunde_id=kunden[0].kunde_id, kategorie_id=kategorien[0].kategorie_id),
         KundenKategoriePraeferenz(kunde_id=kunden[1].kunde_id, kategorie_id=kategorien[1].kategorie_id),
-        FilmlisteKunde(kunde_id=kunden[0].kunde_id, film_id=filme[1].film_id),
     ]
     for relation in items:
-        if isinstance(relation, KundenKategoriePraeferenz):
-            exists = session.exec(
-                select(KundenKategoriePraeferenz).where(
-                    KundenKategoriePraeferenz.kunde_id == relation.kunde_id,
-                    KundenKategoriePraeferenz.kategorie_id == relation.kategorie_id,
-                )
-            ).first()
-        else:
-            exists = session.exec(
-                select(FilmlisteKunde).where(
-                    FilmlisteKunde.kunde_id == relation.kunde_id,
-                    FilmlisteKunde.film_id == relation.film_id,
-                )
-            ).first()
+        exists = session.exec(
+            select(KundenKategoriePraeferenz).where(
+                KundenKategoriePraeferenz.kunde_id == relation.kunde_id,
+                KundenKategoriePraeferenz.kategorie_id == relation.kategorie_id,
+            )
+        ).first()
         if exists is None:
             session.add(relation)
 

@@ -17,7 +17,6 @@ class Kunde:
     geburtsdatum: date = field(default_factory=date.today)
     telefonnummer: str = ""
     zahlungsart: Zahlungsart | None = None
-    gespeicherte_filme: list[UUID] = field(default_factory=list)
     kategorien_praeferenzen: list[UUID] = field(default_factory=list)
 
     def full_name(self) -> str:
@@ -34,14 +33,6 @@ class Kunde:
 
     def can_purchase(self, min_age: int = 0) -> bool:
         return self.age() >= min_age
-
-    def add_saved_film(self, film_id: UUID) -> None:
-        if film_id not in self.gespeicherte_filme:
-            self.gespeicherte_filme.append(film_id)
-
-    def remove_saved_film(self, film_id: UUID) -> None:
-        if film_id in self.gespeicherte_filme:
-            self.gespeicherte_filme.remove(film_id)
 
     def add_category_preference(self, kategorie_id: UUID) -> None:
         if kategorie_id not in self.kategorien_praeferenzen:

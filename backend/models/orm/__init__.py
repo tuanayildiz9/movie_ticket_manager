@@ -4,7 +4,6 @@ from .bestellung_sql import Bestellung
 from .film_kategorie_sql import FilmKategorie
 from .film_sprache_sql import FilmSprache
 from .film_sql import Film
-from .filmliste_kunde_sql import FilmlisteKunde
 from .kategorie_sql import Kategorie
 from .kunde_sql import Kunde
 from .kunden_kategorie_praeferenz_sql import KundenKategoriePraeferenz
@@ -23,7 +22,6 @@ __all__ = [
     "FilmKategorie",
     "FilmSprache",
     "Film",
-    "FilmlisteKunde",
     "Kategorie",
     "Kunde",
     "KundenKategoriePraeferenz",

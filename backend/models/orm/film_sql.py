@@ -8,12 +8,10 @@ from sqlmodel import Field, Relationship, SQLModel
 
 from .film_kategorie_sql import FilmKategorie
 from .film_sprache_sql import FilmSprache
-from .filmliste_kunde_sql import FilmlisteKunde
 
 if TYPE_CHECKING:
     from .bewertung_sql import Bewertung
     from .kategorie_sql import Kategorie
-    from .kunde_sql import Kunde
     from .sprache_sql import Sprache
     from .ticket_sql import Ticket
     from .vorstellung_sql import Vorstellung
@@ -36,5 +34,4 @@ class Film(SQLModel, table=True):
     kategorien: list["Kategorie"] = Relationship(back_populates="filme", link_model=FilmKategorie)
     vorstellungen: list["Vorstellung"] = Relationship(back_populates="film")
     bewertungen: list["Bewertung"] = Relationship(back_populates="film")
-    gespeichert_von: list["Kunde"] = Relationship(back_populates="gespeicherte_filme", link_model=FilmlisteKunde)
     tickets: list["Ticket"] = Relationship(back_populates="film")

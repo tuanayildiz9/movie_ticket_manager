@@ -70,20 +70,6 @@ class UserService:
         kunde.update_profile(data)
         return self.kunde_repo.update(kunde)
 
-    def save_movie(self, kunde_id: UUID, film_id: UUID) -> Kunde:
-        kunde = self.kunde_repo.get_by_id(kunde_id)
-        if kunde is None:
-            raise ValueError("Kunde wurde nicht gefunden.")
-        kunde.add_saved_film(film_id)
-        return self.kunde_repo.update(kunde)
-
-    def remove_saved_movie(self, kunde_id: UUID, film_id: UUID) -> Kunde:
-        kunde = self.kunde_repo.get_by_id(kunde_id)
-        if kunde is None:
-            raise ValueError("Kunde wurde nicht gefunden.")
-        kunde.remove_saved_film(film_id)
-        return self.kunde_repo.update(kunde)
-
     def add_category_preference(self, kunde_id: UUID, kategorie_id: UUID) -> Kunde:
         kunde = self.kunde_repo.get_by_id(kunde_id)
         if kunde is None:

@@ -53,21 +53,6 @@ def profil_page() -> None:
                         ui.label(label).classes("text-gray-400 text-xs uppercase")
                         ui.label(str(value)).classes("text-white")
 
-        # Saved films
-        if kunde.gespeicherte_filme:
-            with ui.card().classes("bg-gray-800 rounded-2xl p-6 mb-6"):
-                ui.label("Gespeicherte Filme").classes("text-xl font-bold text-white mb-4")
-                with ui.row().classes("flex-wrap gap-3"):
-                    for film_id in kunde.gespeicherte_filme:
-                        film = svc.film_service().get_film_details(film_id)
-                        if film:
-                            fid_str = str(film_id)
-                            ui.button(
-                                film.titel,
-                                icon="movie",
-                                on_click=lambda fid=fid_str: ui.navigate.to(f"/film/{fid}"),
-                            ).props("outline color=amber")
-
         # Order history
         with ui.card().classes("bg-gray-800 rounded-2xl p-6"):
             ui.label("Bestellungen").classes("text-xl font-bold text-white mb-4")

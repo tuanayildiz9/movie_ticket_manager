@@ -9,7 +9,6 @@ from backend.models.orm.film_kategorie_sql import FilmKategorie
 from backend.models.orm.film_sprache_sql import FilmSprache
 from backend.models.orm.film_sql import Film as FilmORM
 from backend.models.orm.bewertung_sql import Bewertung as BewertungORM
-from backend.models.orm.filmliste_kunde_sql import FilmlisteKunde
 from backend.models.orm.kategorie_sql import Kategorie
 from backend.models.orm.sitzplatz_sql import Sitzplatz as SitzplatzORM
 from backend.models.orm.sprache_sql import Sprache
@@ -242,8 +241,6 @@ class FilmRepository:
                 session.delete(snack_line)
             for ticket in session.exec(select(TicketORM).where(TicketORM.film_id == film_id)).all():
                 session.delete(ticket)
-            for link in session.exec(select(FilmlisteKunde).where(FilmlisteKunde.film_id == film_id)).all():
-                session.delete(link)
             for link in session.exec(select(FilmSprache).where(FilmSprache.film_id == film_id)).all():
                 session.delete(link)
             for link in session.exec(select(FilmKategorie).where(FilmKategorie.film_id == film_id)).all():

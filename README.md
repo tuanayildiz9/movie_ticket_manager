@@ -22,28 +22,31 @@ Im Movie Ticket Manager können Admins:
 ## User-Stories
 
 ### Kunde
-| ID | User Story | Priorität | Status | Input | Input-Typ | Output | Output-Typ |
-|---|---|---|---|---|---|---|---|
-| US-01 | Als Kunde möchte ich die aktuellen Filme sehen, damit ich informiert Tickets kaufen kann. | Hoch | Umgesetzt | – | – | Filmliste (Titel, Bild, Kategorie, Sprache) | List[Film] |
-| US-02 | Als Kunde möchte ich ein Konto anlegen können, damit ich all meine Käufe einfach verwalten kann. | Hoch | Umgesetzt | Vorname, Nachname, E-Mail, Passwort, Geburtsdatum, Adresse, Zahlungsart | String, String, String, String, Date, String, String | Kontobestätigung | Boolean |
-| US-03 | Als Kunde möchte ich Tickets kaufen können, damit ich die Tickets bequem im Voraus besorgen kann und mir den Zugang ins Kino vereinfachen kann. | Hoch | Umgesetzt | Film-ID, Vorstellungs-ID, Anzahl Tickets, Zahlungsart | Int, Int, Int, String | Bestellbestätigung, Bestellübersicht | Boolean, String |
-| US-04 | Als Kunde möchte ich Sitzplätze auswählen können, damit ich entscheiden kann, wo ich sitze. | Hoch | Umgesetzt | Vorstellungs-ID, Sitzplatz | Int, String | Bestätigter Sitzplatz, Sitzplatz als belegt markiert | String, Boolean |
-| US-05 | Als Kunde möchte ich die Filme auf der Webseite sortieren und filtern können, da ich damit meine Suche nach Filmen verfeinern kann. | Mittel | Umgesetzt | Filteroptionen (Kategorie, Sprache, Altersfreigabe), Suchoption (Titel) | String, String, Int | Gefilterte Filmliste | List[Film] |
-| US-06 | Als Kunde möchte ich Rabatte (Student, Senior, Kind) auswählen können, damit ich den vergünstigten Preis erhalte. | Mittel | Umgesetzt | Rabatt-Typ | String | Aktualisierter Ticketpreis | Float |
-| US-07 | Als Kunde möchte ich Snacks zum Ticket hinzufügen können, damit ich mein Kinoerlebnis bequem planen kann. | Niedrig | Umgesetzt | Snack-Auswahl | String | Snack zum Ticket hinzugefügt, Gesamtpreis aktualisiert | Boolean, Float |
-| US-08 | Als Kunde möchte ich nach dem Kauf eine Bestellübersicht sehen, damit ich alle Details meines Tickets auf einen Blick habe. | Hoch | Umgesetzt | – | – | Filmtitel, Saal, Sitzplatz, Datum, Uhrzeit, Anzahl Tickets, Gesamtpreis | String, String, String, Date, Time, Int, Float |
-| US-09 | Als Kunde möchte ich Filme bewerten können, damit ich meine Meinung teilen kann. | Niedrig | Umgesetzt | Sternebewertung, Kommentar | Int, String | Gespeicherte Bewertung | Boolean |
+| ID | User Story | Priorität | Status | Input | Output |
+|---|---|---|---|---|---|
+| US-01 | Als Kunde möchte ich die aktuellen Filme sehen, damit ich informiert Tickets kaufen kann. | Hoch | Umgesetzt | – | Filmliste (Titel, Bild, Kategorie, Sprache) `List[Film]` |
+| US-02 | Als Kunde möchte ich ein Konto anlegen können, damit ich all meine Käufe einfach verwalten kann. | Hoch | Umgesetzt | Vorname`[String]`, Nachname`[String]`, E-Mail`[String]`, Passwort`[String]`, Geburtsdatum`[Date]`, Adresse`[String]`, Zahlungsart`[String]` | Kontobestätigung `[Boolean]` |
+| US-03 | Als Kunde möchte ich Tickets kaufen können, damit ich die Tickets bequem im Voraus besorgen kann und mir den Zugang ins Kino vereinfachen kann. | Hoch | Umgesetzt | Film-ID`[UUID]`, Vorstellungs-ID`[UUID]`, Anzahl Tickets`[Int]`, Zahlungsart`[String]` | Bestellbestätigung `[Boolean]`, Bestellübersicht `[String]` |
+| US-04 | Als Kunde möchte ich Sitzplätze auswählen können, damit ich entscheiden kann, wo ich sitze. | Hoch | Umgesetzt | Vorstellungs-ID`[UUID]`, Sitzplatz`[String]` | Bestätigter Sitzplatz `[String]`, Sitzplatz als belegt markiert `[Boolean]` |
+| US-05 | Als Kunde möchte ich die Filme auf der Webseite sortieren und filtern können, da ich damit meine Suche nach Filmen verfeinern kann. | Mittel | Umgesetzt | Kategorie`[String]`, Sprache`[String]`, Altersfreigabe`[Int]`, Suchtitel`[String]` | Gefilterte Filmliste `[List[Film]]` |
+| US-06 | Als Kunde möchte ich Rabatte (Student, Senior, Kind) auswählen können, damit ich den vergünstigten Preis erhalte. | Mittel | Umgesetzt | Rabatt-Typ`[String]` | Aktualisierter Ticketpreis `[Float]` |
+| US-07 | Als Kunde möchte ich Snacks zum Ticket hinzufügen können, damit ich mein Kinoerlebnis bequem planen kann. | Niedrig | Umgesetzt | Snack-Auswahl`[String]`, Anzahl`[Int]` | Snack hinzugefügt `[Boolean]`, Gesamtpreis aktualisiert `[Float]` |
+| US-08 | Als Kunde möchte ich nach dem Kauf eine Bestellübersicht sehen, damit ich alle Details meines Tickets auf einen Blick habe. | Hoch | Umgesetzt | – | Filmtitel`[String]`, Saal`[String]`, Sitzplatz`[String]`, Datum`[Date]`, Uhrzeit`[Time]`, Anzahl Tickets`[Int]`, Gesamtpreis`[Float]` |
+| US-09 | Als Kunde möchte ich Filme bewerten können, damit ich meine Meinung teilen kann. | Niedrig | Umgesetzt | Sternebewertung`[Int]`, Kommentar`[String]` | Gespeicherte Bewertung `[Boolean]` |
 
 ### Admin
-| ID | User Story | Priorität | Status | Input | Input-Typ | Output | Output-Typ |
-|---|---|---|---|---|---|---|---|
-| AS-01 | Als Admin möchte ich neue Filme hinzufügen können, damit das Filmprogramm aktuell angezeigt wird. | Hoch | Umgesetzt | Titel, Beschreibung, Kategorie, Sprache, Altersfreigabe, Coverbild, Erscheinungsjahr | String, String, String, String, Int, String, Int | Neuer Film in der Datenbank | Boolean |
-| AS-02a | Als Admin möchte ich bestehende Filme bearbeiten können, damit falsche Informationen korrigiert werden können. | Hoch | Umgesetzt | Film-ID, Titel, Beschreibung, Kategorie, Sprache, Altersfreigabe, Coverbild, Erscheinungsjahr | Int, String, String, String, String, Int, String, Int | Aktualisierter Film in der Datenbank | Boolean |
-| AS-02b | Als Admin möchte ich Filme löschen können, damit veraltete Einträge entfernt werden. | Hoch | Umgesetzt | Film-ID | Int | Film aus der Datenbank gelöscht | Boolean |
-| AS-03 | Der Admin kann die Ticketverkäufe eines Films einsehen. Dabei werden Informationen wie Anzahl verkaufter Tickets und Einnahmen pro Film angezeigt, um die Auslastung und Beliebtheit der Filme zu überwachen. | Hoch | Umgesetzt |  |  |  |  |
-| AS-04 | Der Admin kann Filmvorstellungen verwalten, indem er Datum, Uhrzeit und den zugehörigen Saal erstellen, bearbeiten oder löschen kann. Dadurch können Spielzeiten flexibel geplant und angepasst werden. | Hoch | Umgesetzt |  |  |  |  |
+| ID | User Story | Priorität | Status | Input | Output |
+|---|---|---|---|---|---|
+| AS-01 | Als Admin möchte ich neue Filme hinzufügen können, damit das Filmprogramm aktuell angezeigt wird. | Hoch | Umgesetzt | Titel`[String]`, Beschreibung`[String]`, Kategorie`[String]`, Sprache`[String]`, Altersfreigabe`[Int]`, Coverbild`[String]`, Erscheinungsjahr`[Int]` | Neuer Film in der Datenbank `[Boolean]` |
+| AS-02a | Als Admin möchte ich bestehende Filme bearbeiten können, damit falsche Informationen korrigiert werden können. | Hoch | Umgesetzt | Film-ID`[UUID]`, Titel`[String]`, Beschreibung`[String]`, Kategorie`[String]`, Sprache`[String]`, Altersfreigabe`[Int]`, Coverbild`[String]`, Erscheinungsjahr`[Int]` | Aktualisierter Film in der Datenbank `[Boolean]` |
+| AS-02b | Als Admin möchte ich Filme löschen können, damit veraltete Einträge entfernt werden. | Hoch | Umgesetzt | Film-ID`[UUID]` | Film gelöscht `[Boolean]` |
+| AS-03 | Der Admin kann die Ticketverkäufe eines Films einsehen. Dabei werden Informationen wie Anzahl verkaufter Tickets und Einnahmen pro Film angezeigt, um die Auslastung und Beliebtheit der Filme zu überwachen. | Hoch | Umgesetzt | – | Anzahl Tickets`[Int]`, Umsatz pro Film`[Float]` |
+| AS-04 | Der Admin kann Filmvorstellungen verwalten, indem er Datum, Uhrzeit und den zugehörigen Saal erstellen, bearbeiten oder löschen kann. Dadurch können Spielzeiten flexibel geplant und angepasst werden. | Hoch | Umgesetzt | Datum`[Date]`, Uhrzeit`[Time]`, Saal`[String]` | Vorstellung erstellt/aktualisiert/gelöscht `[Boolean]` |
 
-| GS-01 | Als allgemeiner Benutzer (Admin oder Kunde) möchte ich mich in die Applikation einloggen können, um die verfügbaren Funktionen nutzen zu können. | Hoch | Offen |  |  |  |  |
+### Allgemein
+| ID | User Story | Priorität | Status | Input | Output |
+|---|---|---|---|---|---|
+| GS-01 | Als allgemeiner Benutzer (Admin oder Kunde) möchte ich mich in die Applikation einloggen können, um die verfügbaren Funktionen nutzen zu können. | Hoch | Umgesetzt | E-Mail`[String]`, Passwort`[String]` | Anmeldung erfolgreich `[Boolean]` |
 
 ---
 
@@ -243,35 +246,148 @@ Nach jedem Ticketkauf erhält der Kunde automatisch eine Bestellübersicht mit f
 
 ## Repository-Struktur
 
-(Verlinkung)
+```
+movie_ticket_manager/
+│
+├── main.py                          # Einstiegspunkt – startet die NiceGUI-App
+├── requirements.txt                 # Python-Abhängigkeiten
+│
+├── config/
+│   └── database.py                  # Datenbankverbindung (SQLite) & Engine-Setup
+│
+├── backend/
+│   ├── seed.py                      # Testdaten (Filme, Kunden, Vorstellungen, Sitzplätze)
+│   │
+│   ├── models/                      # Domain-Modelle (reine Python-Klassen)
+│   │   ├── account.py
+│   │   ├── bestellung.py
+│   │   ├── bewertung.py
+│   │   ├── film.py
+│   │   ├── kunde.py
+│   │   ├── sitzplatz.py
+│   │   ├── snack.py
+│   │   ├── ticket.py
+│   │   ├── vorstellung.py
+│   │   ├── enums.py                 # Enumerations (Vergünstigungsart, Rolle, …)
+│   │   └── orm/                     # ORM-Modelle (SQLModel-Tabellen)
+│   │       ├── account_sql.py
+│   │       ├── bestellung_sql.py
+│   │       ├── bewertung_sql.py
+│   │       ├── film_sql.py
+│   │       ├── kategorie_sql.py
+│   │       ├── kunde_sql.py
+│   │       ├── sitzplatz_sql.py
+│   │       ├── snack_sql.py
+│   │       ├── sprache_sql.py
+│   │       ├── ticket_sql.py
+│   │       ├── ticket_snack_sql.py
+│   │       ├── vorstellung_sql.py
+│   │       └── zahlungsart_sql.py
+│   │
+│   ├── repositories/                # Datenzugriff (CRUD-Operationen)
+│   │   ├── account_repository.py
+│   │   ├── bestellung_repository.py
+│   │   ├── bewertung_repository.py
+│   │   ├── film_repository.py
+│   │   ├── kunde_repository.py
+│   │   ├── snack_repository.py
+│   │   └── user_repository.py
+│   │
+│   └── services/                    # Businesslogik
+│       ├── admin_service.py         # Film- und Vorstellungsverwaltung (Admin)
+│       ├── bestellung_service.py    # Ticketkauf, Sitzplatzverwaltung
+│       ├── film_service.py          # Filmsuche, Filter, Bewertungen
+│       └── user_service.py          # Registrierung, Login, Profil
+│
+└── frontend/
+    ├── auth.py                      # Session-Management (Login-State, Rollen)
+    ├── components.py                # Wiederverwendbare UI-Komponenten (Navbar, …)
+    ├── services.py                  # Brücke Frontend ↔ Backend-Services
+    ├── pdf_ticket.py                # PDF-Ticket-Generierung (reportlab)
+    │
+    └── pages/                       # NiceGUI-Seiten (je Route eine Datei)
+        ├── filme.py                 # Startseite – Filmübersicht & Filter
+        ├── film_detail.py           # Filmdetailseite & Bewertungen
+        ├── checkout.py              # Sitzplatzauswahl, Snacks, Ticketkauf
+        ├── profil.py                # Kundenprofil & Bestellhistorie
+        ├── login.py                 # Anmeldeseite
+        ├── register.py              # Registrierungsseite
+        └── admin.py                 # Admin-Panel (Filme, Vorstellungen, Umsatz)
+```
+
+---
 
 ## How-to Programm starten
-1. Projektaufbau
-- Python 3.13 (oder Kursversion) ist Pflicht
-- Erstelle und aktiviere eine virutelle Umgebung:
-  - macOS/Linux:
-  
-  - Windows:
 
-       
-- Installationsabhängigkeit:
+### Voraussetzungen
+- Python **3.11 oder höher** muss installiert sein
+- Empfohlen: Python 3.13
 
+### 1. Repository klonen
+```bash
+git clone <repository-url>
+cd movie_ticket_manager
+```
 
-2. Konfiguration???
-- Zum Beispiel die Einrichtung von Parametern oder Umwelt
+### 2. Virtuelle Umgebung erstellen und aktivieren
 
-3. Start
-- Starte die NiceGui-App (Beispiel):
+**macOS / Linux:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
+**Windows (CMD):**
+```cmd
+python -m venv .venv
+.venv\Scripts\activate.bat
+```
 
-- Öffnen Sie die in der Konsole sausgedruckte URL
+**Windows (PowerShell):**
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
 
-4. Verwendung (Dokumentiert als Schritte)
-Beschreibung der Verwendung der Hauptfunktion
+### 3. Abhängigkeiten installieren
+```bash
+pip install -r requirements.txt
+```
 
-Tickets kaufen:
-1. text...
-2. text...
+Die `requirements.txt` enthält:
+- `nicegui` – Web-UI-Framework
+- `sqlmodel` – ORM & Datenbankzugriff (basiert auf SQLAlchemy + Pydantic)
+- `reportlab` – PDF-Ticket-Generierung
+
+### 4. Anwendung starten
+```bash
+python main.py
+```
+
+Beim ersten Start wird die Datenbank automatisch erstellt und mit Testdaten befüllt (Seed). Anschliessend erscheint in der Konsole eine URL:
+
+```
+NiceGUI ready to go on http://localhost:8080
+```
+
+### 5. Im Browser öffnen
+Öffne **http://localhost:8080** in einem beliebigen Browser.
+
+### 6. Testzugänge
+
+| Rolle | E-Mail | Passwort |
+|---|---|---|
+| Admin | admin@movieticket.ch | admin123 |
+| Kunde | wird bei der Registrierung selbst angelegt | – |
+
+### 7. Tickets kaufen
+1. Mit einem Kundenkonto einloggen (oder neu registrieren unter `/register`)
+2. Auf der Startseite einen Film auswählen
+3. Auf **„Tickets kaufen"** klicken
+4. Im Kino-Saalplan die gewünschten Sitzplätze anklicken (blau = verfügbar, grün = ausgewählt)
+5. Optional: Vergünstigung (Student / Senior / Kind) und Snacks auswählen
+6. **„Jetzt bestellen"** klicken
+7. Die Bestellübersicht erscheint – PDF-Ticket kann heruntergeladen werden
 
 ---
 

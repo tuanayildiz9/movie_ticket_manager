@@ -10,6 +10,11 @@ from backend.repositories.account_repository import AccountRepository
 from backend.repositories.bestellung_repository import BestellungRepository
 from backend.repositories.film_repository import FilmRepository
 from config.database import engine
+from datetime import timedelta
+
+
+def _default_seat_plan() -> list[tuple[str, str]]:
+    return [(f"{row}{number}", row) for row in "ABCDEFGH" for number in range(1, 11)]
 
 
 class AdminService:
@@ -88,11 +93,37 @@ class AdminService:
     # --- Admin CRUD for vorstellungen (showtimes) ---
     def create_vorstellung(self, account_id: UUID, film_id: UUID, saal: str, ort: str, startzeit, endzeit=None):
         self._require_admin(account_id)
+        # Prüfen auf Überschneidungen: keine zwei Vorstellungen im gleichen Saal/Ort zur gleichen Zeit
+        def _norm_end(s):
+            # wenn kein endzeit gesetzt ist, nehme Default-Dauer 3 Stunden
+            return s[1] or (s[0] + timedelta(hours=3))
+
+        new_start = startzeit
+        new_end = endzeit or (startzeit + timedelta(hours=3))
+
         with Session(engine) as session:
+            existing = session.exec(select(VorstellungORM).where(VorstellungORM.saal == saal, VorstellungORM.ort == ort)).all()
+            for ex in existing:
+                ex_start = ex.startzeit
+                ex_end = ex.endzeit or (ex.startzeit + timedelta(hours=3))
+                # Overlap check: start < other_end AND end > other_start
+                if new_start < ex_end and new_end > ex_start:
+                    raise ValueError(f"Konflikt: Vorstellung überschneidet sich mit bestehender Vorstellung (Start: {ex_start}, Ende: {ex_end}) im Saal {saal}.")
             row = VorstellungORM(film_id=film_id, saal=saal, ort=ort, startzeit=startzeit, endzeit=endzeit)
             session.add(row)
             session.commit()
             session.refresh(row)
+
+            for sitz_label, sektor in _default_seat_plan():
+                session.add(
+                    SitzplatzORM(
+                        vorstellung_id=row.vorstellung_id,
+                        sitz_label=sitz_label,
+                        sektor=sektor,
+                        besetzt=False,
+                    )
+                )
+            session.commit()
             return self.film_repo.get_vorstellung_by_id(row.vorstellung_id)
 
     def update_vorstellung(self, account_id: UUID, vorstellung_id: UUID, updates: dict):
@@ -101,6 +132,25 @@ class AdminService:
             row = session.get(VorstellungORM, vorstellung_id)
             if row is None:
                 raise ValueError("Vorstellung wurde nicht gefunden.")
+            # Bestimme die neuen Werte (kombiniere bestehende + updates)
+            new_saal = updates.get("saal", row.saal)
+            new_ort = updates.get("ort", row.ort)
+            new_start = updates.get("startzeit", row.startzeit)
+            new_end = updates.get("endzeit", row.endzeit)
+
+            # Prüfen auf Überschneidungen mit anderen Vorstellungen im selben Saal/Ort
+            from datetime import timedelta as _td
+
+            effective_new_end = new_end or (new_start + _td(hours=3))
+            others = session.exec(select(VorstellungORM).where(VorstellungORM.saal == new_saal, VorstellungORM.ort == new_ort)).all()
+            for ex in others:
+                if ex.vorstellung_id == vorstellung_id:
+                    continue
+                ex_start = ex.startzeit
+                ex_end = ex.endzeit or (ex.startzeit + _td(hours=3))
+                if new_start < ex_end and effective_new_end > ex_start:
+                    raise ValueError(f"Konflikt: Geänderte Zeiten überschneiden sich mit Vorstellung {ex.vorstellung_id} (Start: {ex_start}, Ende: {ex_end}) im Saal {new_saal}.")
+
             for key in ["saal", "ort", "startzeit", "endzeit"]:
                 if key in updates:
                     setattr(row, key, updates[key])

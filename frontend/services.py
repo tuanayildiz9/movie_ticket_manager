@@ -93,6 +93,36 @@ def get_all_seats_for_vorstellung(vorstellung_id: UUID) -> list[dict]:
         ]
 
 
+def get_vorstellungen_in_saal_ort(saal: str, ort: str) -> list[dict]:
+    """Return existing Vorstellungen for a given `saal` and `ort`."""
+    from backend.models.orm.vorstellung_sql import Vorstellung as VorstellungORM
+
+    with Session(engine) as session:
+        rows = session.exec(select(VorstellungORM).where(VorstellungORM.saal == saal, VorstellungORM.ort == ort)).all()
+        return [
+            {"vorstellung_id": row.vorstellung_id, "startzeit": row.startzeit, "endzeit": row.endzeit}
+            for row in rows
+        ]
+
+
+def get_existing_saele() -> list[str]:
+    """Return known hall names from existing showtimes."""
+    from backend.models.orm.vorstellung_sql import Vorstellung as VorstellungORM
+
+    with Session(engine) as session:
+        rows = session.exec(select(VorstellungORM.saal).distinct().order_by(VorstellungORM.saal)).all()
+        return [row for row in rows if row]
+
+
+def get_existing_orte() -> list[str]:
+    """Return known locations from existing showtimes."""
+    from backend.models.orm.vorstellung_sql import Vorstellung as VorstellungORM
+
+    with Session(engine) as session:
+        rows = session.exec(select(VorstellungORM.ort).distinct().order_by(VorstellungORM.ort)).all()
+        return [row for row in rows if row]
+
+
 def get_sitzplatz_info(sitzplatz_id: UUID) -> dict | None:
     with Session(engine) as session:
         row = session.get(SitzplatzORM, sitzplatz_id)

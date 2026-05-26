@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from datetime import timedelta
 from decimal import Decimal
 from uuid import UUID
 
@@ -13,7 +14,19 @@ def _parse_date(val) -> date | None:
     try:
         return date.fromisoformat(str(val))
     except (ValueError, TypeError):
-        return None
+        try:
+            return datetime.strptime(str(val), "%d.%m.%Y").date()
+        except (ValueError, TypeError):
+            return None
+
+
+def _apply_german_date_picker(date_input) -> None:
+    date_input.picker.props['mask'] = 'DD.MM.YYYY'
+    date_input.picker.props[':locale'] = "{days:['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],daysShort:['So','Mo','Di','Mi','Do','Fr','Sa'],months:['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],monthsShort:['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'],firstDayOfWeek:1}"
+
+
+def _overlaps(existing_start: datetime, existing_end: datetime, new_start: datetime, new_end: datetime) -> bool:
+    return new_start < existing_end and new_end > existing_start
 
 from nicegui import ui
 
@@ -485,27 +498,36 @@ def _confirm_delete_film(film_id: UUID, film_titel: str, account_id: UUID | None
 
 
 def _create_vorstellung_dialog(film_id: UUID, account_id: UUID | None, on_done) -> None:
+    existing_saele = svc.get_existing_saele()
+    existing_orte = svc.get_existing_orte()
+
     with ui.dialog() as dialog, ui.card().classes("bg-gray-800 min-w-96"):
         ui.label("Neue Vorstellung").classes("text-xl font-bold text-amber-400 mb-4")
 
-        ort_in = ui.input("Ort", value="Zürich").classes("w-full").props("outlined dark color=amber")
-        saal_in = ui.input("Saal", value="Saal 1").classes("w-full mt-3").props("outlined dark color=amber")
+        ort_in = ui.select(
+            label="Ort",
+            options=existing_orte or ["Zürich"],
+            value=existing_orte[0] if existing_orte else "Zürich",
+            with_input=True,
+        ).classes("w-full").props("outlined dark color=amber")
+        saal_in = ui.select(
+            label="Saal",
+            options=existing_saele or ["Saal 1"],
+            value=existing_saele[0] if existing_saele else "Saal 1",
+            with_input=True,
+        ).classes("w-full mt-3").props("outlined dark color=amber")
         with ui.row().classes("w-full gap-3 mt-3"):
             start_date = (
-                ui.date_input("Startdatum", value=date.today())
-                .props("outlined dark color=amber")
+                ui.date_input("Startdatum", value=date.today().strftime("%d.%m.%Y"))
+                .props("outlined dark color=amber mask=##.##.####")
                 .classes("flex-1")
             )
+            _apply_german_date_picker(start_date)
+        with ui.row().classes("w-full gap-3 mt-3"):
             start_time = (
                 ui.input("Startzeit", value="19:30")
                 .props("outlined dark color=amber type=time")
                 .classes("w-36")
-            )
-        with ui.row().classes("w-full gap-3 mt-2"):
-            end_date = (
-                ui.date_input("Enddatum (optional)")
-                .props("outlined dark color=amber")
-                .classes("flex-1")
             )
             end_time = (
                 ui.input("Endzeit", value="21:30")
@@ -523,11 +545,22 @@ def _create_vorstellung_dialog(film_id: UUID, account_id: UUID | None, on_done) 
                     return
                 start_time_obj = datetime.strptime(start_time.value or "19:30", "%H:%M").time()
                 startzeit = datetime.combine(parsed_start, start_time_obj)
-                endzeit = None
-                parsed_end = _parse_date(end_date.value)
-                if parsed_end:
-                    end_time_obj = datetime.strptime(end_time.value or "21:30", "%H:%M").time()
-                    endzeit = datetime.combine(parsed_end, end_time_obj)
+                end_time_obj = datetime.strptime(end_time.value or "21:30", "%H:%M").time()
+                endzeit = datetime.combine(parsed_start, end_time_obj)
+                if endzeit <= startzeit:
+                    err.set_text("Endzeit muss nach der Startzeit liegen.")
+                    return
+                # Client-side conflict check: prüfe vorhandene Vorstellungen im gleichen Saal/Ort
+                existing = svc.get_vorstellungen_in_saal_ort(saal_in.value.strip(), ort_in.value.strip())
+                new_start = startzeit
+                new_end = endzeit
+                for ex in existing:
+                    ex_start = ex["startzeit"]
+                    ex_end = ex["endzeit"] or (ex_start + timedelta(hours=3))
+                    if _overlaps(ex_start, ex_end, new_start, new_end):
+                        err.set_text(f"Konflikt mit bestehender Vorstellung (Start: {ex_start}, Ende: {ex_end}) im {saal_in.value}.")
+                        return
+
                 svc.admin_service().create_vorstellung(
                     account_id=account_id,
                     film_id=film_id,
@@ -558,21 +591,38 @@ def _edit_vorstellung_dialog(vorstellung_id: UUID, account_id: UUID | None, on_d
     with ui.dialog() as dialog, ui.card().classes("bg-gray-800 min-w-96"):
         ui.label("Vorstellung bearbeiten").classes("text-xl font-bold text-amber-400 mb-4")
 
-        ort_in = ui.input("Ort", value=v.ort or "").classes("w-full").props("outlined dark color=amber")
-        saal_in = ui.input("Saal", value=v.saal or "").classes("w-full mt-3").props("outlined dark color=amber")
+        existing_saele = svc.get_existing_saele()
+        existing_orte = svc.get_existing_orte()
+
+        ort_in = ui.select(
+            label="Ort",
+            options=sorted(set(existing_orte + ([v.ort] if v.ort else []))) or ["Zürich"],
+            value=v.ort or (existing_orte[0] if existing_orte else "Zürich"),
+            with_input=True,
+        ).classes("w-full").props("outlined dark color=amber")
+        saal_in = ui.select(
+            label="Saal",
+            options=sorted(set(existing_saele + ([v.saal] if v.saal else []))) or ["Saal 1"],
+            value=v.saal or (existing_saele[0] if existing_saele else "Saal 1"),
+            with_input=True,
+        ).classes("w-full mt-3").props("outlined dark color=amber")
         start_date_val = v.startzeit.date() if v.startzeit else date.today()
         start_time_val = v.startzeit.strftime("%H:%M") if v.startzeit else "19:30"
         with ui.row().classes("w-full gap-3 mt-3"):
             start_date = (
-                ui.date_input("Startdatum", value=start_date_val)
-                .props("outlined dark color=amber")
+                ui.date_input("Startdatum", value=start_date_val.strftime("%d.%m.%Y") if start_date_val else "")
+                .props("outlined dark color=amber mask=##.##.####")
                 .classes("flex-1")
             )
+            _apply_german_date_picker(start_date)
             start_time = (
                 ui.input("Startzeit", value=start_time_val)
                 .props("outlined dark color=amber type=time")
                 .classes("w-36")
             )
+            end_time = ui.input("Endzeit", value=v.endzeit.strftime("%H:%M") if v.endzeit else "21:30").props(
+                "outlined dark color=amber type=time"
+            ).classes("w-36")
 
         err = ui.label("").classes("text-red-400 text-sm mt-2")
 
@@ -584,10 +634,28 @@ def _edit_vorstellung_dialog(vorstellung_id: UUID, account_id: UUID | None, on_d
                     return
                 start_time_obj = datetime.strptime(start_time.value or "19:30", "%H:%M").time()
                 startzeit = datetime.combine(parsed_start, start_time_obj)
+                end_time_obj = datetime.strptime(end_time.value or "21:30", "%H:%M").time()
+                endzeit = datetime.combine(parsed_start, end_time_obj)
+                if endzeit <= startzeit:
+                    err.set_text("Endzeit muss nach der Startzeit liegen.")
+                    return
+                # Client-side conflict check for updates
+                existing = svc.get_vorstellungen_in_saal_ort(saal_in.value.strip(), ort_in.value.strip())
+                new_start = startzeit
+                new_end = endzeit
+                for ex in existing:
+                    if ex["vorstellung_id"] == vorstellung_id:
+                        continue
+                    ex_start = ex["startzeit"]
+                    ex_end = ex["endzeit"] or (ex_start + timedelta(hours=3))
+                    if _overlaps(ex_start, ex_end, new_start, new_end):
+                        err.set_text(f"Konflikt mit bestehender Vorstellung (Start: {ex_start}, Ende: {ex_end}) im {saal_in.value}.")
+                        return
+
                 svc.admin_service().update_vorstellung(
                     account_id=account_id,
                     vorstellung_id=vorstellung_id,
-                    updates={"ort": ort_in.value.strip(), "saal": saal_in.value.strip(), "startzeit": startzeit},
+                    updates={"ort": ort_in.value.strip(), "saal": saal_in.value.strip(), "startzeit": startzeit, "endzeit": endzeit},
                 )
                 ui.notify("Vorstellung gespeichert!", color="positive")
                 dialog.close()

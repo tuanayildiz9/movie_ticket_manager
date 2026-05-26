@@ -31,18 +31,22 @@ class Film:
     def matches_filters(
         self,
         search_term: str | None = None,
-        sprache_id: UUID | None = None,
-        kategorie_id: UUID | None = None,
+        sprache_id: UUID | list[UUID] | None = None,
+        kategorie_id: UUID | list[UUID] | None = None,
         max_altersfreigabe: int | None = None,
     ) -> bool:
         if search_term:
             haystack = " ".join([self.titel, self.beschreibung, self.hauptdarsteller]).lower()
             if search_term.lower() not in haystack:
                 return False
-        if sprache_id and sprache_id not in self.sprache_ids:
-            return False
-        if kategorie_id and kategorie_id not in self.kategorie_ids:
-            return False
+        if sprache_id:
+            sprache_ids = [sprache_id] if isinstance(sprache_id, UUID) else sprache_id
+            if not any(uid in self.sprache_ids for uid in sprache_ids):
+                return False
+        if kategorie_id:
+            kategorie_ids = [kategorie_id] if isinstance(kategorie_id, UUID) else kategorie_id
+            if not any(uid in self.kategorie_ids for uid in kategorie_ids):
+                return False
         if max_altersfreigabe is not None and self.altersfreigabe > max_altersfreigabe:
             return False
         return True

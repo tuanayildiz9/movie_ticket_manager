@@ -91,8 +91,8 @@ class FilmService:
     def filter_films(
         self,
         search_term: str | None = None,
-        sprache_id: UUID | None = None,
-        kategorie_id: UUID | None = None,
+        sprache_id: UUID | list[UUID] | None = None,
+        kategorie_id: UUID | list[UUID] | None = None,
         max_altersfreigabe: int | None = None,
     ) -> list[Film]:
         return self.film_repo.find(
@@ -110,8 +110,8 @@ class FilmService:
     def search_films(
         self,
         search_term: str | None = None,
-        kategorie_name: str | None = None,
-        sprache_name: str | None = None,
+        kategorie_name: str | list[str] | None = None,
+        sprache_name: str | list[str] | None = None,
         max_altersfreigabe: int | None = None,
         only_active: bool = True,
         sort: str | None = None,
@@ -122,25 +122,28 @@ class FilmService:
 
         Resolves `kategorie_name` and `sprache_name` to their UUIDs and delegates to the repository.
         """
-        kategorie_id = None
-        sprache_id = None
+        kategorie_ids: list[UUID] = []
+        sprache_ids: list[UUID] = []
         with Session(engine) as session:
+            if isinstance(kategorie_name, str):
+                kategorie_name = [kategorie_name]
+            if isinstance(sprache_name, str):
+                sprache_name = [sprache_name]
+
             if kategorie_name:
-                k = session.exec(select(KategorieORM).where(KategorieORM.name == kategorie_name)).first()
-                if k is not None:
-                    kategorie_id = k.kategorie_id
+                rows = session.exec(select(KategorieORM).where(KategorieORM.name.in_(kategorie_name))).all()
+                kategorie_ids = [row.kategorie_id for row in rows]
             if sprache_name:
-                s = session.exec(select(SpracheORM).where(SpracheORM.name == sprache_name)).first()
-                if s is not None:
-                    sprache_id = s.sprache_id
+                rows = session.exec(select(SpracheORM).where(SpracheORM.name.in_(sprache_name))).all()
+                sprache_ids = [row.sprache_id for row in rows]
 
         sort_param = self._normalize_sort(sort)
 
         return self.film_repo.find(
             filter_data={
                 "search_term": search_term,
-                "sprache_id": sprache_id,
-                "kategorie_id": kategorie_id,
+                "sprache_id": sprache_ids,
+                "kategorie_id": kategorie_ids,
                 "max_altersfreigabe": max_altersfreigabe,
                 "aktiv": True if only_active else None,
             },

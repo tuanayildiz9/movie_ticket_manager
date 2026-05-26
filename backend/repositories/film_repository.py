@@ -76,8 +76,20 @@ class FilmRepository:
     ) -> list[Film]:
         filter_data = filter_data or {}
         search_term = filter_data.get("search_term") if isinstance(filter_data.get("search_term"), str) else None
-        sprache_id = filter_data.get("sprache_id") if isinstance(filter_data.get("sprache_id"), UUID) else None
-        kategorie_id = filter_data.get("kategorie_id") if isinstance(filter_data.get("kategorie_id"), UUID) else None
+        sprache_value = filter_data.get("sprache_id")
+        kategorie_value = filter_data.get("kategorie_id")
+        sprache_id = (
+            sprache_value
+            if isinstance(sprache_value, UUID)
+            or (isinstance(sprache_value, list) and all(isinstance(uid, UUID) for uid in sprache_value))
+            else None
+        )
+        kategorie_id = (
+            kategorie_value
+            if isinstance(kategorie_value, UUID)
+            or (isinstance(kategorie_value, list) and all(isinstance(uid, UUID) for uid in kategorie_value))
+            else None
+        )
         max_altersfreigabe = filter_data.get("max_altersfreigabe") if isinstance(filter_data.get("max_altersfreigabe"), int) else None
         aktiv = filter_data.get("aktiv") if isinstance(filter_data.get("aktiv"), bool) else None
 
@@ -120,8 +132,24 @@ class FilmRepository:
             for film in films
             if film.matches_filters(
                 search_term=filter_data.get("search_term") if isinstance(filter_data.get("search_term"), str) else None,
-                sprache_id=filter_data.get("sprache_id") if isinstance(filter_data.get("sprache_id"), UUID) else None,
-                kategorie_id=filter_data.get("kategorie_id") if isinstance(filter_data.get("kategorie_id"), UUID) else None,
+                sprache_id=(
+                    filter_data.get("sprache_id")
+                    if isinstance(filter_data.get("sprache_id"), UUID)
+                    or (
+                        isinstance(filter_data.get("sprache_id"), list)
+                        and all(isinstance(uid, UUID) for uid in filter_data.get("sprache_id", []))
+                    )
+                    else None
+                ),
+                kategorie_id=(
+                    filter_data.get("kategorie_id")
+                    if isinstance(filter_data.get("kategorie_id"), UUID)
+                    or (
+                        isinstance(filter_data.get("kategorie_id"), list)
+                        and all(isinstance(uid, UUID) for uid in filter_data.get("kategorie_id", []))
+                    )
+                    else None
+                ),
                 max_altersfreigabe=filter_data.get("max_altersfreigabe") if isinstance(filter_data.get("max_altersfreigabe"), int) else None,
             )
         ]

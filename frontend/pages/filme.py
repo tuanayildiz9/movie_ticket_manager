@@ -35,14 +35,14 @@ def filme_page() -> None:
                 .classes("flex-1 min-w-48")
             )
             kat_sel = (
-                ui.select(options=kat_options, value="", label="Kategorie")
+                ui.select(options=kat_options, value=[], label="Kategorien", multiple=True)
                 .props("outlined dark color=amber")
-                .classes("w-44")
+                .classes("w-64")
             )
             spr_sel = (
-                ui.select(options=spr_options, value="", label="Sprache")
+                ui.select(options=spr_options, value=[], label="Sprachen", multiple=True)
                 .props("outlined dark color=amber")
-                .classes("w-40")
+                .classes("w-56")
             )
             sort_sel = (
                 ui.select(options=sort_options, value="titel", label="Sortierung")
@@ -54,10 +54,12 @@ def filme_page() -> None:
         films_container = ui.element("div").classes("w-full")
 
         def load_films() -> None:
+            kat_values = kat_sel.value or []
+            spr_values = spr_sel.value or []
             films = svc.film_service().search_films(
                 search_term=search_in.value or None,
-                kategorie_name=kat_sel.value or None,
-                sprache_name=spr_sel.value or None,
+                kategorie_name=kat_values or None,
+                sprache_name=spr_values or None,
                 only_active=True,
                 sort=sort_sel.value,
                 size=60,
@@ -96,13 +98,13 @@ def filme_page() -> None:
 
         def reset_filters() -> None:
             search_in.set_value("")
-            kat_sel.set_value("")
-            spr_sel.set_value("")
+            kat_sel.set_value([])
+            spr_sel.set_value([])
             sort_sel.set_value("titel")
             load_films()
 
         # Live-Filter: bei jeder Änderung sofort neu laden
-        search_in.on("input", lambda _: load_films())
+        search_in.on_value_change(lambda _: load_films())
         kat_sel.on("update:model-value", lambda _: load_films())
         spr_sel.on("update:model-value", lambda _: load_films())
         sort_sel.on("update:model-value", lambda _: load_films())

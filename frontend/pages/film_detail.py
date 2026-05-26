@@ -7,6 +7,28 @@ from frontend.auth import get_kunde_id, is_admin, is_logged_in
 from frontend.components import film_cover, navbar
 
 
+_GERMAN_MONTHS = [
+    "Januar",
+    "Februar",
+    "März",
+    "April",
+    "Mai",
+    "Juni",
+    "Juli",
+    "August",
+    "September",
+    "Oktober",
+    "November",
+    "Dezember",
+]
+
+
+def _format_german_date(value) -> str:
+    if value is None:
+        return "–"
+    return f"{value.day:02d}. {_GERMAN_MONTHS[value.month - 1]} {value.year}"
+
+
 @ui.page("/film/{film_id}")
 def film_detail_page(film_id: str) -> None:
     if not is_logged_in():
@@ -61,7 +83,7 @@ def film_detail_page(film_id: str) -> None:
                 if film.erscheinungsdatum:
                     with ui.row().classes("items-center gap-2"):
                         ui.icon("calendar_today").classes("text-gray-400 text-base")
-                        ui.label(str(film.erscheinungsdatum)).classes("text-gray-300 text-sm")
+                        ui.label(_format_german_date(film.erscheinungsdatum)).classes("text-gray-300 text-sm")
 
                 ui.label(f"Basispreis: CHF {film.basispreis:.2f}").classes("text-amber-400 text-lg font-semibold")
 

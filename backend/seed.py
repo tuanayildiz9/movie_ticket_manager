@@ -34,8 +34,10 @@ PAYMENT_METHODS = [
 
 CATEGORIES = [
     {"name": "Action"},
+    {"name": "Abenteuer"},
     {"name": "Drama"},
     {"name": "Familie"},
+    {"name": "Fantasy"},
     {"name": "Thriller"},
     {"name": "Komödie"},
     {"name": "Horror"},
@@ -43,6 +45,7 @@ CATEGORIES = [
     {"name": "Science-Fiction"},
     {"name": "Romantik"},
     {"name": "Dokumentarfilm"},
+    {"name": "Musical"},
 ]
 
 LANGUAGES = [
@@ -110,36 +113,39 @@ ADMIN_ACCOUNT = {
 
 FILMS = [
     {
-        "titel": "Neon City",
-        "beschreibung": "Actionfilm mit futuristischer Kulisse.",
-        "altersfreigabe": 16,
+        "titel": "Ein Minecraft Film",
+        "legacy_titel": "Neon City",
+        "beschreibung": "Ein Außenseiter und ein kleiner Junge werden in die Minecraft-Oberwelt gezogen und müssen gemeinsam zurückfinden.",
+        "altersfreigabe": 12,
         "coverbild_url": "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-        "hauptdarsteller": "Mia Keller, Jonas Frei",
-        "erscheinungsdatum": date(2026, 4, 1),
+        "hauptdarsteller": "Jack Black, Jason Momoa, Emma Myers, Danielle Brooks, Sebastian Hansen",
+        "erscheinungsdatum": date(2025, 4, 3),
         "basispreis": Decimal("14.50"),
-        "kategorien": ["Action", "Science-Fiction"],
+        "kategorien": ["Action", "Abenteuer", "Familie"],
         "sprachen": ["Deutsch", "Englisch"],
     },
     {
-        "titel": "Herzschlag",
-        "beschreibung": "Emotionales Drama über Familie und Entscheidungen.",
+        "titel": "Captain America: Brave New World",
+        "legacy_titel": "Herzschlag",
+        "beschreibung": "Sam Wilson muss eine internationale Krise und den Gegnern hinter einem Adamantium-Deal entgegentreten.",
         "altersfreigabe": 12,
         "coverbild_url": "https://m.media-amazon.com/images/M/MV5BMTQ2NzkzMDI4OF5BMl5BanBnXkFtZTcwMDA0NzE1NA@@._V1_SX300.jpg",
-        "hauptdarsteller": "Lena Baum, Tim Keller",
-        "erscheinungsdatum": date(2026, 4, 15),
+        "hauptdarsteller": "Anthony Mackie, Harrison Ford, Danny Ramirez, Carl Lumbly, Giancarlo Esposito",
+        "erscheinungsdatum": date(2025, 2, 13),
         "basispreis": Decimal("13.00"),
-        "kategorien": ["Drama", "Familie"],
-        "sprachen": ["Deutsch"],
+        "kategorien": ["Action", "Abenteuer", "Science-Fiction"],
+        "sprachen": ["Deutsch", "Englisch"],
     },
     {
-        "titel": "Mission: Impossible – The Final Reckoning",
-        "beschreibung": "Ethan Hunt und das IMF-Team jagen eine gefährliche KI, die globale Geheimdienste infiltriert hat. Der finale Einsatz in Tom Cruises legendärer Agentensaga.",
-        "altersfreigabe": 12,
+        "titel": "Deadpool & Wolverine",
+        "legacy_titel": "Shelter",
+        "beschreibung": "Deadpool und Wolverine werden von der TVA zusammengebracht und müssen eine zerstörerische Multiversum-Bedrohung stoppen.",
+        "altersfreigabe": 16,
         "coverbild_url": "https://m.media-amazon.com/images/M/MV5BZGQ5NGEyYTItMjNiMi00Y2EwLTkzOWItMjc5YjJiMjMyNTI0XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-        "hauptdarsteller": "Tom Cruise, Hayley Atwell, Ving Rhames, Angela Bassett, Simon Pegg",
-        "erscheinungsdatum": date(2025, 5, 23),
+        "hauptdarsteller": "Ryan Reynolds, Hugh Jackman, Emma Corrin, Matthew Macfadyen, Morena Baccarin",
+        "erscheinungsdatum": date(2024, 7, 24),
         "basispreis": Decimal("16.00"),
-        "kategorien": ["Action", "Thriller"],
+        "kategorien": ["Action", "Komödie", "Science-Fiction"],
         "sprachen": ["Englisch", "Deutsch"],
     },
     {
@@ -154,15 +160,16 @@ FILMS = [
         "sprachen": ["Englisch", "Deutsch"],
     },
     {
-        "titel": "Masters of the Universe",
-        "beschreibung": "Prinz Adam muss als He-Man sein Reich gegen den tödlichen Skeletor verteidigen. Ein episches Live-Action-Abenteuer von Regisseur Travis Knight.",
-        "altersfreigabe": 12,
+        "titel": "Elio",
+        "legacy_titel": "Palestine 36",
+        "beschreibung": "Ein fantasievoller Junge wird versehentlich zum Botschafter der Erde im Kommuniversum.",
+        "altersfreigabe": 6,
         "coverbild_url": "https://m.media-amazon.com/images/M/MV5BN2MzMjMyNmQtYzkwMC00NTM2LThmN2ItMTczMGVmNGY5ODZlXkEyXkFqcGc@._V1_QL75_UX380_CR0,4,380,562_.jpg",
-        "hauptdarsteller": "Nicholas Galitzine, Jared Leto, Idris Elba, Camila Mendes, Alison Brie",
-        "erscheinungsdatum": date(2026, 6, 5),
+        "hauptdarsteller": "Yonas Kibreab, Zoe Saldaña, Remy Edgerly, Brad Garrett, Jameela Jamil",
+        "erscheinungsdatum": date(2025, 6, 19),
         "basispreis": Decimal("15.50"),
-        "kategorien": ["Action", "Science-Fiction"],
-        "sprachen": ["Englisch", "Deutsch"],
+        "kategorien": ["Animation", "Abenteuer", "Familie", "Science-Fiction"],
+        "sprachen": ["Englisch"],
     },
     {
         "titel": "Karate Kid: Legends",
@@ -176,15 +183,28 @@ FILMS = [
         "sprachen": ["Englisch", "Deutsch"],
     },
     {
-        "titel": "Shelter",
-        "beschreibung": "Ex-MI6-Agent Mason rettet während eines Sturms ein junges Mädchen und löst damit eine gefährliche Kettenreaktion aus. Jason Statham in einem packenden Actionthriller.",
-        "altersfreigabe": 16,
+        "titel": "F1",
+        "legacy_titel": "Backrooms",
+        "beschreibung": "Ein ehemaliger Rennstar kehrt zurück, um ein angeschlagenes Formel-1-Team wieder an die Spitze zu bringen.",
+        "altersfreigabe": 12,
         "coverbild_url": "https://m.media-amazon.com/images/M/MV5BMzI2ODY3MzQtYzllNy00YWM1LWExZTgtOGIwNjk2MmE2MmY2XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-        "hauptdarsteller": "Jason Statham, Bill Nighy, Naomi Ackie, Bodhi Rae Breathnach",
-        "erscheinungsdatum": date(2026, 3, 26),
+        "hauptdarsteller": "Brad Pitt, Damson Idris, Kerry Condon, Javier Bardem, Tobias Menzies",
+        "erscheinungsdatum": date(2025, 6, 25),
         "basispreis": Decimal("14.50"),
-        "kategorien": ["Action", "Thriller"],
-        "sprachen": ["Englisch"],
+        "kategorien": ["Action", "Drama"],
+        "sprachen": ["Englisch", "Deutsch"],
+    },
+    {
+        "titel": "Final Destination 6: Bloodlines",
+        "legacy_titel": "Whistle",
+        "beschreibung": "Eine Studentin erkennt, dass der Tod ihre ganze Familie verfolgt, nachdem ihre Großmutter einst eine Katastrophe vorhersah.",
+        "altersfreigabe": 18,
+        "coverbild_url": "https://m.media-amazon.com/images/M/MV5BNWIwYzUwNmMtYTY2My00ODg2LWI3MmEtNmY0Njg3MzYwYmQyXkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
+        "hauptdarsteller": "Kaitlyn Santa Juana, Teo Briones, Richard Harmon, Owen Patrick Joyner, Tony Todd",
+        "erscheinungsdatum": date(2025, 5, 15),
+        "basispreis": Decimal("14.50"),
+        "kategorien": ["Horror", "Thriller"],
+        "sprachen": ["Englisch", "Deutsch"],
     },
     {
         "titel": "Hoppers",
@@ -198,70 +218,63 @@ FILMS = [
         "sprachen": ["Englisch", "Deutsch"],
     },
     {
-        "titel": "Glennkill: Ein Schafskrimi",
-        "beschreibung": "Als ihr Schäfer tot aufgefunden wird, nehmen die Schafe die Ermittlungen selbst in die Hoof. Eine turbulente Familienkomödie nach dem Bestseller von Leonie Swann.",
-        "altersfreigabe": 6,
+        "titel": "Jurassic World: Die Wiedergeburt",
+        "legacy_titel": "Marsupilami",
+        "beschreibung": "Ein Expeditionsteam bricht auf eine gefährliche Insel auf, um Dinosaurier-DNS für ein dringend benötigtes Medikament zu sichern.",
+        "altersfreigabe": 12,
         "coverbild_url": "https://m.media-amazon.com/images/M/MV5BNTFmZWI4YmMtNmQ0ZC00ZGQwLTk1OWEtZjAyZmIzOGY0MGFiXkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-        "hauptdarsteller": "Hugh Jackman, Emma Thompson, Nicholas Braun, Molly Gordon",
-        "erscheinungsdatum": date(2026, 5, 14),
+        "hauptdarsteller": "Scarlett Johansson, Mahershala Ali, Jonathan Bailey, Rupert Friend, Manuel Garcia-Rulfo",
+        "erscheinungsdatum": date(2025, 7, 2),
         "basispreis": Decimal("14.00"),
-        "kategorien": ["Familie", "Komödie"],
+        "kategorien": ["Action", "Abenteuer", "Science-Fiction"],
         "sprachen": ["Englisch", "Deutsch"],
     },
     {
-        "titel": "Whistle",
-        "beschreibung": "Eine Gruppe von Schülern entdeckt eine verfluchte Todespfeife – jeder Ton beschwört den Tod des Bläsers herauf. Atmosphärischer Schulhorror von Regisseur Corin Hardy.",
-        "altersfreigabe": 16,
+        "titel": "Mufasa: Der König der Löwen",
+        "legacy_titel": "Glennkill: Ein Schafskrimi",
+        "beschreibung": "Rafiki erzählt die Vorgeschichte von Mufasa und Scar, bevor aus dem verlorenen Jungtier der spätere König wird.",
+        "altersfreigabe": 6,
         "coverbild_url": "https://m.media-amazon.com/images/M/MV5BNWIwYzUwNmMtYTY2My00ODg2LWI3MmEtNmY0Njg3MzYwYmQyXkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-        "hauptdarsteller": "Dafne Keen, Sophie Nélisse, Sky Yang, Percy Hynes White, Nick Frost",
-        "erscheinungsdatum": date(2026, 5, 7),
+        "hauptdarsteller": "Aaron Pierre, Kelvin Harrison Jr., Tiffany Boone, Mads Mikkelsen, Thandiwe Newton",
+        "erscheinungsdatum": date(2024, 12, 19),
         "basispreis": Decimal("14.50"),
-        "kategorien": ["Horror"],
-        "sprachen": ["Englisch"],
+        "kategorien": ["Abenteuer", "Drama", "Familie"],
+        "sprachen": ["Englisch", "Deutsch"],
     },
     {
-        "titel": "Backrooms",
-        "beschreibung": "Eine Therapeutin sucht in einer alptraumhaften Parallelwelt aus endlosen leeren Büroräumen nach ihrem verschwundenen Patienten. Beklemmender A24-Horror-Sci-Fi-Thriller.",
-        "altersfreigabe": 16,
+        "titel": "Mission: Impossible – The Final Reckoning",
+        "beschreibung": "Ethan Hunt und das IMF-Team jagen eine gefährliche KI, die globale Geheimdienste infiltriert hat.",
+        "altersfreigabe": 12,
         "coverbild_url": "https://m.media-amazon.com/images/M/MV5BYzQyYjZmMjctMzIyZi00MDI0LWJhNGQtMzQ3MTFlNDgwNGM5XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-        "hauptdarsteller": "Chiwetel Ejiofor, Renate Reinsve, Mark Duplass, Finn Bennett",
-        "erscheinungsdatum": date(2026, 5, 29),
+        "hauptdarsteller": "Tom Cruise, Hayley Atwell, Ving Rhames, Simon Pegg, Angela Bassett",
+        "erscheinungsdatum": date(2025, 5, 21),
         "basispreis": Decimal("15.00"),
-        "kategorien": ["Horror", "Science-Fiction"],
-        "sprachen": ["Englisch"],
+        "kategorien": ["Action", "Thriller"],
+        "sprachen": ["Englisch", "Deutsch"],
     },
     {
-        "titel": "Marsupilami",
-        "beschreibung": "David soll ein mysteriöses Paket liefern – doch darin steckt ein kleines Marsupilami-Baby, das sein Leben auf den Kopf stellt. Die freche Comicfigur von André Franquin auf der Leinwand.",
+        "titel": "Wicked",
+        "legacy_titel": "Iron Maiden: Burning Ambition",
+        "beschreibung": "Elphaba und Glinda erleben an der Shiz-Universität, wie aus Rivalität eine Freundschaft und aus Freundschaft ein Mythos wird.",
         "altersfreigabe": 6,
         "coverbild_url": "https://m.media-amazon.com/images/M/MV5BYTRiMTBkYWYtZjNlMi00OGUyLWE4YWMtMGExMjA2MWQ5NGUzXkEyXkFqcGc@._V1_SX300.jpg",
-        "hauptdarsteller": "Philippe Lacheau, Jean Reno, Jamel Debbouze, Tarek Boudali",
-        "erscheinungsdatum": date(2026, 2, 4),
+        "hauptdarsteller": "Cynthia Erivo, Ariana Grande-Butera, Jonathan Bailey, Jeff Goldblum, Michelle Yeoh",
+        "erscheinungsdatum": date(2024, 12, 12),
         "basispreis": Decimal("13.50"),
-        "kategorien": ["Familie", "Komödie"],
-        "sprachen": ["Französisch", "Deutsch"],
+        "kategorien": ["Fantasy", "Musical", "Familie"],
+        "sprachen": ["Englisch", "Deutsch"],
     },
     {
-        "titel": "Iron Maiden: Burning Ambition",
-        "beschreibung": "Über fünf Jahrzehnte dokumentiert dieser Film den Aufstieg von Iron Maiden von den Londoner Pubs zu den grössten Stadien der Welt. Mit exklusiven Interviews der Bandmitglieder.",
-        "altersfreigabe": 12,
-        "coverbild_url": "https://m.media-amazon.com/images/M/MV5BYWUyYTU5YTAtODJmZC00Mzk4LTk1NWYtYjM3NzJkOGUyZWQxXkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-        "hauptdarsteller": "Steve Harris, Bruce Dickinson, Nicko McBrain, Adrian Smith, Dave Murray",
-        "erscheinungsdatum": date(2026, 5, 8),
-        "basispreis": Decimal("13.50"),
-        "kategorien": ["Dokumentarfilm"],
-        "sprachen": ["Englisch"],
-    },
-    {
-        "titel": "Palestine 36",
-        "beschreibung": "Im Jahr 1936 erheben sich palästinensische Dörfer gegen die britische Kolonialherrschaft – drei Einzelschicksale erzählen von Mut und Widerstand in einem historischen Wendepunkt.",
+        "titel": "How to Train Your Dragon",
+        "legacy_titel": "Masters of the Universe",
+        "beschreibung": "Hicks und der Drache Ohnezahn zeigen, dass Mensch und Drache gemeinsam stärker sind als ihre Welt glaubt.",
         "altersfreigabe": 12,
         "coverbild_url": "https://m.media-amazon.com/images/M/MV5BOGU3MTc1MWUtOWJkMC00MjRiLWJlN2ItNDYzMzRhZWZhZjAxXkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-        "hauptdarsteller": "Jeremy Irons, Hiam Abbass, Saleh Bakri, Robert Aramayo",
-        "erscheinungsdatum": date(2026, 5, 14),
+        "hauptdarsteller": "Mason Thames, Nico Parker, Gerard Butler, Nick Frost, Julian Dennison",
+        "erscheinungsdatum": date(2025, 6, 12),
         "basispreis": Decimal("13.50"),
-        "kategorien": ["Drama"],
-        "sprachen": ["Englisch"],
+        "kategorien": ["Abenteuer", "Familie", "Fantasy"],
+        "sprachen": ["Deutsch", "Englisch"],
     },
 ]
 
@@ -391,6 +404,8 @@ def _create_films(
     rows: list[Film] = []
     for item in FILMS:
         row = session.exec(select(Film).where(Film.titel == item["titel"])).first()
+        if row is None and item.get("legacy_titel"):
+            row = session.exec(select(Film).where(Film.titel == item["legacy_titel"])).first()
         if row is None:
             row = Film(
                 titel=item["titel"],
@@ -404,30 +419,42 @@ def _create_films(
             )
             session.add(row)
             session.flush()
+        else:
+            row.titel = item["titel"]
+            row.beschreibung = item["beschreibung"]
+            row.altersfreigabe = item["altersfreigabe"]
+            row.coverbild_url = item["coverbild_url"]
+            row.hauptdarsteller = item["hauptdarsteller"]
+            row.erscheinungsdatum = item["erscheinungsdatum"]
+            row.basispreis = item["basispreis"]
+            row.aktiv = True
+            session.add(row)
+            session.flush()
         rows.append(row)
 
     for film_row, item in zip(rows, FILMS, strict=False):
-        for kategorie_name in item["kategorien"]:
-            exists = session.exec(
-                select(FilmKategorie).where(
-                    FilmKategorie.film_id == film_row.film_id,
-                    FilmKategorie.kategorie_id == kategorie_map[kategorie_name].kategorie_id,
-                )
-            ).first()
-            if exists is None:
-                session.add(FilmKategorie(film_id=film_row.film_id, kategorie_id=kategorie_map[kategorie_name].kategorie_id))
-        for sprache_name in item["sprachen"]:
-            exists = session.exec(
-                select(FilmSprache).where(
-                    FilmSprache.film_id == film_row.film_id,
-                    FilmSprache.sprache_id == sprache_map[sprache_name].sprache_id,
-                )
-            ).first()
-            if exists is None:
-                session.add(FilmSprache(film_id=film_row.film_id, sprache_id=sprache_map[sprache_name].sprache_id))
+        _sync_film_relations(session, film_row, item, kategorie_map, sprache_map)
 
     session.flush()
     return rows
+
+
+def _sync_film_relations(
+    session: Session,
+    film_row: Film,
+    item: dict[str, object],
+    kategorie_map: dict[str, Kategorie],
+    sprache_map: dict[str, Sprache],
+) -> None:
+    for link in session.exec(select(FilmSprache).where(FilmSprache.film_id == film_row.film_id)).all():
+        session.delete(link)
+    for link in session.exec(select(FilmKategorie).where(FilmKategorie.film_id == film_row.film_id)).all():
+        session.delete(link)
+
+    for kategorie_name in item["kategorien"]:
+        session.add(FilmKategorie(film_id=film_row.film_id, kategorie_id=kategorie_map[kategorie_name].kategorie_id))
+    for sprache_name in item["sprachen"]:
+        session.add(FilmSprache(film_id=film_row.film_id, sprache_id=sprache_map[sprache_name].sprache_id))
 
 
 def _create_vorstellungen_and_seats(

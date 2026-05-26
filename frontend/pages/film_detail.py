@@ -125,14 +125,28 @@ def film_detail_page(film_id: str) -> None:
 
                         vid_str = str(vorstellung.vorstellung_id)
                         fid_str = str(film.film_id)
+                        # Button ausgrauen, wenn Vorstellung in der Vergangenheit liegt
+                        is_past_v = False
+                        if getattr(vorstellung, "startzeit", None) is not None:
+                            from datetime import datetime
+
+                            is_past_v = vorstellung.startzeit < datetime.utcnow()
+
                         if freie > 0 and not is_admin():
-                            ui.button(
-                                "Ticket buchen",
-                                icon="confirmation_number",
-                                on_click=lambda v=vid_str, f=fid_str: ui.navigate.to(
-                                    f"/checkout/{v}?film_id={f}"
-                                ),
-                            ).props("unelevated color=amber")
+                            if is_past_v:
+                                # deutliche Kennzeichnung: Button ausgegraut + erklärender Hinweis
+                                with ui.row().classes("items-center gap-3"):
+                                    ui.button("Ticket buchen", icon="confirmation_number").props("unelevated color=amber disable")
+                                    ui.badge("Vergangen").props("color=gray")
+                                    ui.label("Diese Vorstellung liegt in der Vergangenheit; Buchung nicht möglich.").classes("text-gray-400 text-sm")
+                            else:
+                                ui.button(
+                                    "Ticket buchen",
+                                    icon="confirmation_number",
+                                    on_click=lambda v=vid_str, f=fid_str: ui.navigate.to(
+                                        f"/checkout/{v}?film_id={f}"
+                                    ),
+                                ).props("unelevated color=amber")
                         elif freie == 0:
                             ui.badge("Ausverkauft").props("color=red")
 

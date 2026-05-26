@@ -50,11 +50,22 @@ class BestellungService:
             if not self.film_repo.reserve_seat(vorstellung_id, sitzplatz_id):
                 raise ValueError("Sitzplatz konnte nicht reserviert werden.")
 
+            # Geschäftsregel: Keine Buchung für Vorstellungen in der Vergangenheit
+            vorstellung = self.film_repo.get_vorstellung_by_id(vorstellung_id)
+            if vorstellung and getattr(vorstellung, "startzeit", None) is not None:
+                if vorstellung.startzeit < datetime.utcnow():
+                    raise ValueError("Buchung für vergangene Vorstellungen ist nicht möglich.")
+
             raw_discount = ticket_data.get("verguenstigungsart", Verguensigungsart.REGULAER)
             if isinstance(raw_discount, Verguensigungsart):
                 discount_type = raw_discount
             else:
                 discount_type = Verguensigungsart(str(raw_discount).lower())
+
+            # Geschäftsregel: Für Filme mit Altersfreigabe >= 16 sind Kindervergünstigungen
+            # nicht zulässig (Kinder zählen bis 15 Jahre).
+            if discount_type == Verguensigungsart.KIND and getattr(film, "altersfreigabe", 0) >= 16:
+                raise ValueError("Kindervergünstigung ist für Filme ab 16 nicht erlaubt.")
 
             ticket = Ticket(
                 bestellung_id=bestellung.bestellung_id,

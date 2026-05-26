@@ -1,5 +1,6 @@
 from decimal import Decimal
 from uuid import UUID
+from datetime import datetime
 
 from fastapi import Request
 from nicegui import ui
@@ -52,6 +53,11 @@ def checkout_page(request: Request, vorstellung_id: str) -> None:
         ui.navigate.to("/")
         return
 
+    # Prüfen, ob die Vorstellung in der Vergangenheit liegt (Buchungen dann nicht erlaubt)
+    is_past = False
+    if getattr(vorstellung, "startzeit", None) is not None:
+        is_past = vorstellung.startzeit < datetime.utcnow()
+
     all_snacks = svc.snack_repo().list_all()
 
     # Alle Sitze + welche davon noch frei sind
@@ -79,6 +85,12 @@ def checkout_page(request: Request, vorstellung_id: str) -> None:
     # CSS einbinden
     ui.add_head_html(_SEAT_CSS)
     navbar()
+
+    # Falls die Vorstellung in der Vergangenheit liegt, zeige klaren Hinweis über dem Saalplan
+    if is_past:
+        with ui.row().classes("items-center gap-3 mb-3"):
+            ui.badge("Vergangen").props("color=gray")
+            ui.label("Diese Vorstellung liegt in der Vergangenheit; Buchung deaktiviert.").classes("text-gray-400 text-sm")
 
     with ui.column().classes("w-full max-w-5xl mx-auto px-4 py-8"):
         ui.link(f"← Zurück zu {film.titel}", f"/film/{fid}").classes(
@@ -136,7 +148,8 @@ def checkout_page(request: Request, vorstellung_id: str) -> None:
                                 )
                                 seat_buttons[sid] = btn
 
-                                if not is_occupied:
+                                # Wenn die Vorstellung in der Vergangenheit ist, dürfen keine Sitze ausgewählt werden
+                                if not is_occupied and not is_past:
                                     btn.on("click", lambda s=seat: _toggle_seat(s))
                                 else:
                                     btn.props("disable")
@@ -167,9 +180,21 @@ def checkout_page(request: Request, vorstellung_id: str) -> None:
                                 f"Reihe {entry['seat_info']['sektor']}, "
                                 f"Platz {_platz_nr(entry['seat_info']['sitz_label'])}"
                             ).classes("text-gray-300 text-sm flex-1")
+                            # Entferne die Kind-Option für Filme mit Altersfreigabe >= 16
+                            opts = DISCOUNT_OPTS.copy()
+                            if getattr(film, "altersfreigabe", 0) >= 16:
+                                opts = {k: v for k, v in opts.items() if k != "kind"}
+
+                            # Falls der Eintrag aktuell 'kind' gesetzt hat, aber nicht erlaubt ist,
+                            # setze auf 'regulaer' zurück.
+                            sel_value = entry.get("discount", "regulaer")
+                            if sel_value == "kind" and "kind" not in opts:
+                                sel_value = "regulaer"
+                                entry["discount"] = sel_value
+
                             (
-                                ui.select(options=DISCOUNT_OPTS, value=entry["discount"])
-                                .props("outlined dark color=amber dense")
+                                ui.select(options=opts, value=sel_value)
+                                .props(("outlined dark color=amber dense" + (" disable" if is_past else "")))
                                 .classes("w-52")
                                 .on_value_change(lambda e, idx=i: _set_discount(idx, e.value))
                             )
@@ -225,7 +250,7 @@ def checkout_page(request: Request, vorstellung_id: str) -> None:
 
                 ui.button(
                     "Jetzt bestellen", icon="shopping_cart", on_click=lambda: _place_order()
-                ).classes("w-full mt-2").props("unelevated color=amber size=lg")
+                ).classes("w-full mt-2").props("unelevated color=amber size=lg" + (" disable" if is_past else ""))
 
     # ── Hilfsfunktionen ───────────────────────────────────────────────────────
 
@@ -288,6 +313,9 @@ def checkout_page(request: Request, vorstellung_id: str) -> None:
         _update_total()
 
     def _place_order() -> None:
+        if is_past:
+            err_label.set_text("Vorstellung liegt bereits in der Vergangenheit. Buchung nicht möglich.")
+            return
         if not selected_seats:
             err_label.set_text("Bitte mindestens einen Sitzplatz auswählen.")
             return

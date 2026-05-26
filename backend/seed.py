@@ -464,7 +464,30 @@ def _create_vorstellungen_and_seats(
     vorstellungen: list[Vorstellung] = []
     sitzplaetze: list[Sitzplatz] = []
 
+    # Vorstellungsdaten: (Monat, Tag, Start-Stunde, Start-Minute)
+    SCREENING_DATES = [
+        (6,  3, 14,  0),   # Film  1 – 03. Jun 14:00
+        (6,  3, 19, 30),   # Film  2 – 03. Jun 19:30
+        (6,  5, 20,  0),   # Film  3 – 05. Jun 20:00
+        (6,  7, 17, 30),   # Film  4 – 07. Jun 17:30
+        (6,  8, 19, 30),   # Film  5 – 08. Jun 19:30
+        (6, 10, 20,  0),   # Film  6 – 10. Jun 20:00
+        (6, 12, 19,  0),   # Film  7 – 12. Jun 19:00
+        (6, 14, 15,  0),   # Film  8 – 14. Jun 15:00
+        (6, 18, 19, 30),   # Film  9 – 18. Jun 19:30
+        (6, 21, 20,  0),   # Film 10 – 21. Jun 20:00
+        (7,  1, 19, 30),   # Film 11 – 01. Jul 19:30
+        (7,  5, 20,  0),   # Film 12 – 05. Jul 20:00
+        (7, 10, 19,  0),   # Film 13 – 10. Jul 19:00
+        (7, 15, 18,  0),   # Film 14 – 15. Jul 18:00
+        (7, 20, 20, 30),   # Film 15 – 20. Jul 20:30
+    ]
+
     for index, film in enumerate(filme, start=1):
+        month, day, hour, minute = SCREENING_DATES[index - 1] if index <= len(SCREENING_DATES) else (7, 25, 19, 30)
+        new_start = datetime(2026, month, day, hour, minute)
+        new_end   = datetime(2026, month, day, hour + 2, minute + 15 if minute + 15 < 60 else (minute + 15) % 60)
+
         vorstellung = session.exec(
             select(Vorstellung).where(
                 Vorstellung.film_id == film.film_id,
@@ -477,9 +500,15 @@ def _create_vorstellungen_and_seats(
                 film_id=film.film_id,
                 saal=f"Saal {index}",
                 ort="Zürich",
-                startzeit=datetime(2026, 5, index, 19, 30),
-                endzeit=datetime(2026, 5, index, 21, 45),
+                startzeit=new_start,
+                endzeit=new_end,
             )
+            session.add(vorstellung)
+            session.flush()
+        else:
+            # Datum aktualisieren, falls es noch auf alten Werten steht
+            vorstellung.startzeit = new_start
+            vorstellung.endzeit   = new_end
             session.add(vorstellung)
             session.flush()
         vorstellungen.append(vorstellung)

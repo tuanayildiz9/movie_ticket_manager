@@ -267,10 +267,7 @@ def checkout_page(request: Request, vorstellung_id: str) -> None:
         )
         for s in all_snacks:
             if snack_counts[s.snack_id] > 0:
-                lines.append(
-                    f"{s.name} ×{snack_counts[s.snack_id]}: "
-                    f"CHF {s.preis * snack_counts[s.snack_id]:.2f}"
-                )
+                lines.append(f"{snack_counts[s.snack_id]}x {s.name}")
         total = ticket_total + snack_total
         total_label.set_text(f"CHF {total:.2f}")
         detail_label.set_text(" | ".join(lines) if lines else "Noch kein Sitzplatz gewählt")

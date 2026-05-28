@@ -331,20 +331,172 @@ NiceGUI ready to go on http://localhost:8080
 ## Tests
 
 ### Testmischung
-- Insgesamt [Anzahl] Tests: Z.B. 
-- Insgesamt [Anzahl] Datenbanktests: Z.B. 
-- insgesamt [Anzahl] Integrationstests: Z.B.
+- Insgesamt **12** Tests
+- Insgesamt **3** Datenbanktests
+- Insgesamt **3** Integrationstests
 
-### Vorlage zum Erstellen von Testfällen
-1. Testfall-ID – eindeutige Kennung (z. B. TC_001)
-2. Titel/Beschreibung des Testfalls – Worum geht es in dem Test?
-3. Voraussetzungen: Anforderungen vor der Durchführung des Tests
-4. Testschritte: Auszuführende Aktionen
-5. Testdaten/Eingaben
-6. Erwartetes Ergebnis
-7. Tatsächliches Ergebnis
-8. Status – bestanden oder nicht bestanden
-9. Kommentare – Weitere Hinweise oder Mängel festgestellt
+Tests ausführen:
+```bash
+python -m pytest tests/ -v
+```
+
+---
+
+### Testfälle
+
+#### Unit Tests
+
+| Feld | TC_001 |
+|---|---|
+| **Testfall-ID** | TC_001 |
+| **Titel** | Regulärer Ticketpreis ohne Rabatt |
+| **Voraussetzungen** | `Ticket`-Klasse importierbar, `Verguensigungsart.REGULAER` verfügbar |
+| **Testschritte** | Ticket mit REGULAER erstellen → `apply_discount(18.00)` aufrufen |
+| **Testdaten** | Basispreis: 18.00 CHF, Vergünstigung: REGULAER |
+| **Erwartetes Ergebnis** | Preis = 18.00 CHF (kein Abzug) |
+| **Tatsächliches Ergebnis** | 18.00 CHF |
+| **Status** | Bestanden |
+| **Kommentare** | – |
+
+| Feld | TC_002 |
+|---|---|
+| **Testfall-ID** | TC_002 |
+| **Titel** | Studentenrabatt wird korrekt abgezogen |
+| **Voraussetzungen** | `Ticket`-Klasse importierbar |
+| **Testschritte** | Ticket mit STUDENT erstellen → `apply_discount(18.00)` aufrufen |
+| **Testdaten** | Basispreis: 18.00 CHF, Vergünstigung: STUDENT (−4 CHF) |
+| **Erwartetes Ergebnis** | Preis = 14.00 CHF |
+| **Tatsächliches Ergebnis** | 14.00 CHF |
+| **Status** | Bestanden |
+| **Kommentare** | – |
+
+| Feld | TC_003 |
+|---|---|
+| **Testfall-ID** | TC_003 |
+| **Titel** | Seniorenrabatt wird korrekt abgezogen |
+| **Voraussetzungen** | `Ticket`-Klasse importierbar |
+| **Testschritte** | Ticket mit SENIOR erstellen → `apply_discount(18.00)` aufrufen |
+| **Testdaten** | Basispreis: 18.00 CHF, Vergünstigung: SENIOR (−3 CHF) |
+| **Erwartetes Ergebnis** | Preis = 15.00 CHF |
+| **Tatsächliches Ergebnis** | 15.00 CHF |
+| **Status** | Bestanden |
+| **Kommentare** | – |
+
+| Feld | TC_004 |
+|---|---|
+| **Testfall-ID** | TC_004 |
+| **Titel** | Kinderrabatt wird korrekt abgezogen |
+| **Voraussetzungen** | `Ticket`-Klasse importierbar |
+| **Testschritte** | Ticket mit KIND erstellen → `apply_discount(18.00)` aufrufen |
+| **Testdaten** | Basispreis: 18.00 CHF, Vergünstigung: KIND (−6 CHF) |
+| **Erwartetes Ergebnis** | Preis = 12.00 CHF |
+| **Tatsächliches Ergebnis** | 12.00 CHF |
+| **Status** | Bestanden |
+| **Kommentare** | – |
+
+| Feld | TC_005 |
+|---|---|
+| **Testfall-ID** | TC_005 |
+| **Titel** | Ticketpreis wird nicht negativ bei hohem Rabatt |
+| **Voraussetzungen** | `Ticket`-Klasse importierbar |
+| **Testschritte** | Ticket mit KIND erstellen → `apply_discount(4.00)` aufrufen |
+| **Testdaten** | Basispreis: 4.00 CHF, Vergünstigung: KIND (−6 CHF) |
+| **Erwartetes Ergebnis** | Preis = 0.00 CHF (Minimum, kein negativer Preis) |
+| **Tatsächliches Ergebnis** | 0.00 CHF |
+| **Status** | Bestanden |
+| **Kommentare** | – |
+
+| Feld | TC_006 |
+|---|---|
+| **Testfall-ID** | TC_006 |
+| **Titel** | Bestellungssumme aus mehreren Tickets korrekt berechnet |
+| **Voraussetzungen** | `Bestellung`- und `Ticket`-Klasse importierbar |
+| **Testschritte** | 2 Tickets (REGULAER + STUDENT) erstellen, zur Bestellung hinzufügen, `calculate_total()` aufrufen |
+| **Testdaten** | Ticket 1: 18.00 CHF (regulär), Ticket 2: 14.00 CHF (student) |
+| **Erwartetes Ergebnis** | Total = 32.00 CHF |
+| **Tatsächliches Ergebnis** | 32.00 CHF |
+| **Status** | Bestanden |
+| **Kommentare** | – |
+
+---
+
+#### Datenbanktests
+
+| Feld | TC_007 |
+|---|---|
+| **Testfall-ID** | TC_007 |
+| **Titel** | Filmabfrage liefert alle geseedeten Filme |
+| **Voraussetzungen** | In-Memory-SQLite-DB, 2 Filme eingetragen (Inception FSK 12, Matrix FSK 16) |
+| **Testschritte** | `film_repo.list_all()` aufrufen |
+| **Testdaten** | Film 1: „Inception" (18 CHF), Film 2: „Matrix" (20 CHF) |
+| **Erwartetes Ergebnis** | Liste mit 2 Filmen; Titel „Inception" und „Matrix" enthalten |
+| **Tatsächliches Ergebnis** | 2 Filme, beide Titel vorhanden |
+| **Status** | Bestanden |
+| **Kommentare** | – |
+
+| Feld | TC_008 |
+|---|---|
+| **Testfall-ID** | TC_008 |
+| **Titel** | Gespeicherte Bestellung ist mit Tickets wiederabrufbar |
+| **Voraussetzungen** | In-Memory-DB, Film + Vorstellung + Sitzplatz vorhanden |
+| **Testschritte** | Ticket erstellen → Bestellung anlegen → `bestellung_repo.create()` → `get_by_id()` |
+| **Testdaten** | 1 Ticket (REGULAER, 18.00 CHF), zufällige Kunden-UUID |
+| **Erwartetes Ergebnis** | Geladene Bestellung hat 1 Ticket, `total_betrag` = 18.00 CHF |
+| **Tatsächliches Ergebnis** | 1 Ticket, 18.00 CHF |
+| **Status** | Bestanden |
+| **Kommentare** | – |
+
+| Feld | TC_009 |
+|---|---|
+| **Testfall-ID** | TC_009 |
+| **Titel** | Leere Datenbank liefert leere Filmliste |
+| **Voraussetzungen** | Frische In-Memory-DB ohne eingetragene Filme |
+| **Testschritte** | `film_repo.list_all()` auf leerer DB aufrufen |
+| **Testdaten** | Keine |
+| **Erwartetes Ergebnis** | Leere Liste `[]` |
+| **Tatsächliches Ergebnis** | `[]` |
+| **Status** | Bestanden |
+| **Kommentare** | – |
+
+---
+
+#### Integrationstests
+
+| Feld | TC_010 |
+|---|---|
+| **Testfall-ID** | TC_010 |
+| **Titel** | Bestellung mit einem Ticket wird korrekt erstellt |
+| **Voraussetzungen** | In-Memory-DB, Film + Vorstellung + Sitzplatz + Kunde vorhanden |
+| **Testschritte** | `BestellungService.create_order()` mit 1 regulärem Ticket aufrufen |
+| **Testdaten** | Film: Inception (18 CHF), Vergünstigung: REGULAER |
+| **Erwartetes Ergebnis** | Bestellung mit ID, `anzahl_tickets` = 1, `total_betrag` = 18.00 CHF |
+| **Tatsächliches Ergebnis** | Bestellung erstellt, 18.00 CHF |
+| **Status** | Bestanden |
+| **Kommentare** | – |
+
+| Feld | TC_011 |
+|---|---|
+| **Testfall-ID** | TC_011 |
+| **Titel** | Studentenrabatt wird bei Bestellung korrekt verrechnet |
+| **Voraussetzungen** | In-Memory-DB, Film mit 2 Sitzplätzen + Kunde vorhanden |
+| **Testschritte** | `create_order()` mit 2 Tickets aufrufen (1× STUDENT, 1× REGULAER) |
+| **Testdaten** | Basispreis: 18 CHF; Ticket 1: STUDENT (14 CHF), Ticket 2: REGULAER (18 CHF) |
+| **Erwartetes Ergebnis** | `anzahl_tickets` = 2, `total_betrag` = 32.00 CHF |
+| **Tatsächliches Ergebnis** | 2 Tickets, 32.00 CHF |
+| **Status** | Bestanden |
+| **Kommentare** | – |
+
+| Feld | TC_012 |
+|---|---|
+| **Testfall-ID** | TC_012 |
+| **Titel** | Kinderrabatt bei FSK-16-Film wird blockiert |
+| **Voraussetzungen** | In-Memory-DB, Film mit `altersfreigabe=16` + Kunde vorhanden |
+| **Testschritte** | `create_order()` mit Vergünstigung KIND für FSK-16-Film aufrufen |
+| **Testdaten** | Film: Matrix (FSK 16, 20 CHF), Vergünstigung: KIND |
+| **Erwartetes Ergebnis** | `ValueError` mit Meldung „Kindervergünstigung" |
+| **Tatsächliches Ergebnis** | `ValueError` ausgelöst |
+| **Status** | Bestanden |
+| **Kommentare** | Geschäftsregel korrekt durchgesetzt |
 
 ## Teammitglieder und Arbeitsaufteilung
 | Name | Arbeitsaufteilung |

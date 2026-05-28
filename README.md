@@ -383,7 +383,7 @@ NiceGUI ready to go on http://localhost:8080
 
 | Rolle | E-Mail | Passwort |
 |---|---|---|
-| Admin | admin@movieticket.ch | admin123 |
+| Admin | admin@example.com | admin123 |
 | Kunde | wird bei der Registrierung selbst angelegt | – |
 
 ### 7. Tickets kaufen

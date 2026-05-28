@@ -54,31 +54,28 @@ Im Movie Ticket Manager können Admins:
 
 
 ### Main Use Cases
+
 **Kunde**
 - Filme anzeigen
-- Filme filtern und sortieren (z. B. nach Kategorie, Sprache)
 - Konto anlegen
 - Einloggen / Ausloggen
+- Filme filtern und sortieren
 - Tickets kaufen
-- Sitzplatz auswählen
-- Mehrere Tickets gleichzeitig kaufen
-- Rabatte auswählen (Student, Kind, Senior)
-- Snacks zum Ticket hinzufügen
-- Bestellübersicht anzeigen
+  - `<<include>>` Sitzplatz auswählen
+  - `<<extend>>` Rabatt auswählen
+  - `<<extend>>` Snacks hinzufügen
+  - `<<include>>` Bestellübersicht anzeigen
 - Filme bewerten
+- Filmliste speichern
 
 **Admin**
 - Einloggen / Ausloggen
 - Filme hinzufügen
-- Filme bearbeiten
-- Filme löschen
-- Informationen zum Film verwalten (Datum, Uhrzeit, Saal)
-- Ticketverkäufe / Verfügbarkeit einsehen (z. B. Anzahl pro Film)
-- Übersicht über gebuchte Filme anzeigen
+- Filme bearbeiten / löschen
 
 ### Rollen
-- Kunden (Nutzt die Anwendung zum Suchen, Bewerten und Kaufen von Filmtickets)
-- Admin (Mitarbeitende Kino; Verwaltet Inhalte und überwacht das System)
+- Kunde
+- Admin
 
 ---
 

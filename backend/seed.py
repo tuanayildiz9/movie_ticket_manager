@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from hashlib import sha256
 
-from sqlmodel import Session, select
+from sqlmodel import SQLModel, Session, select
 
 from backend.models.orm import (
     Account,
@@ -283,6 +283,9 @@ def seed_database() -> None:
     create_db_and_tables()
 
     with Session(engine) as session:
+        if _database_has_existing_data(session):
+            return
+
         _create_admin_account(session)
 
         zahlungsarten = _create_payment_methods(session)
@@ -299,6 +302,13 @@ def seed_database() -> None:
         _create_ratings(session, kunden, filme)
 
         session.commit()
+
+
+def _database_has_existing_data(session: Session) -> bool:
+    for table in SQLModel.metadata.tables.values():
+        if session.exec(select(1).select_from(table).limit(1)).first() is not None:
+            return True
+    return False
 
 
 def _create_payment_methods(session: Session) -> list[Zahlungsart]:

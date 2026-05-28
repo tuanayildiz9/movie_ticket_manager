@@ -36,7 +36,7 @@ class Film:
         max_altersfreigabe: int | None = None,
     ) -> bool:
         if search_term:
-            haystack = " ".join([self.titel, self.beschreibung, self.hauptdarsteller]).lower()
+            haystack = " ".join([self.titel, self.hauptdarsteller]).lower()
             if search_term.lower() not in haystack:
                 return False
         if sprache_id:

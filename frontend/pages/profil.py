@@ -1,5 +1,3 @@
-from datetime import date
-
 from nicegui import ui
 
 import frontend.services as svc
@@ -45,7 +43,7 @@ def profil_page() -> None:
                     ("E-Mail", account.email if account else "–"),
                     ("Adresse", f"{kunde.adresse}, {kunde.plz}" if kunde.adresse else "–"),
                     ("Telefon", kunde.telefonnummer or "–"),
-                    ("Geburtsdatum", str(kunde.geburtsdatum) if kunde.geburtsdatum else "–"),
+                    ("Geburtsdatum", kunde.geburtsdatum.strftime("%d.%m.%Y") if kunde.geburtsdatum else "–"),
                     ("Alter", f"{kunde.age()} Jahre" if kunde.geburtsdatum else "–"),
                     ("Zahlungsart", kunde.zahlungsart.name if kunde.zahlungsart else "–"),
                 ]:

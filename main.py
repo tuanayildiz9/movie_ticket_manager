@@ -8,11 +8,9 @@ from backend.repositories import (
 )
 from backend.services import AdminService, BestellungService, FilmService, UserService
 from backend.seed import seed_database
-from config.database import create_db_and_tables
 
 
 def build_application():
-    create_db_and_tables()
     seed_database()
 
     account_repo = AccountRepository()

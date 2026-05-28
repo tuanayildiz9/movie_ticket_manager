@@ -185,24 +185,58 @@ Die Anwendung interagiert vollständig über den Browser. NiceGUI stellt die ges
 
 **Architektur-Hinweis:** Der Browser ist ein dünner Client; UI-State und Businesslogik laufen serverseitig in der NiceGUI-App.
 
+**Implementierung:** Alle Seiten befinden sich in `frontend/pages/`. Beispiel aus `frontend/pages/filme.py`:
+```python
+with ui.card().classes("bg-gray-800 rounded-xl cursor-pointer hover:ring-2 hover:ring-amber-400"):
+    ui.label(film.titel).classes("text-white font-bold")
+    ui.badge(f"FSK {film.altersfreigabe}").props("color=amber")
+    ui.label(f"ab CHF {film.basispreis:.2f}").classes("text-amber-400 font-semibold")
+```
+
 ### 2. Datenvalidierung
 
-Die Anwendung validiert alle Benutzereingaben, um Datenintegrität und eine fehlerfreie Nutzererfahrung sicherzustellen:
-- **Registrierung:** E-Mail, Vorname und Nachname sind Pflichtfelder; doppelte E-Mails werden verhindert
-- **Alterscheck:** Kindervergünstigung wird für Filme mit Altersfreigabe ≥ 16 blockiert
-- **Sitzplatzbuchung:** Bereits belegte Sitzplätze können nicht erneut reserviert werden
-- **Buchungszeitpunkt:** Buchungen für vergangene Vorstellungen werden abgelehnt
-- **Bewertung:** Sternebewertung wird auf den Bereich 1–5 eingeschränkt
-- **Vorstellungsverwaltung (Admin):** Überschneidungen bei Vorstellungen im gleichen Saal werden verhindert
+Die Anwendung validiert alle Benutzereingaben, um Datenintegrität und eine fehlerfreie Nutzererfahrung sicherzustellen. Validierungen sind sowohl im Backend (Services) als auch im Frontend (Pages) implementiert:
+
+| Validierung | Implementierung | Datei |
+|---|---|---|
+| Pflichtfelder (Name, E-Mail) leer → Fehler | `_require_text()` wirft `ValueError` | `backend/services/user_service.py` |
+| Doppelte E-Mail → Fehler | `get_by_email()` prüft vor Anlage | `backend/services/user_service.py` |
+| Kindervergünstigung bei FSK ≥ 16 → blockiert | `if altersfreigabe >= 16: raise ValueError` | `backend/services/bestellung_service.py` |
+| Vergangene Vorstellung → Buchung abgelehnt | `if startzeit < datetime.utcnow(): raise ValueError` | `backend/services/bestellung_service.py` |
+| Sitzplatz bereits belegt → Fehler | `reserve_seat()` gibt `False` zurück | `backend/services/bestellung_service.py` |
+| Überschneidung im gleichen Saal → Fehler | Zeitraum-Overlap-Check | `backend/services/admin_service.py` |
+| Geburtsdatum falsches Format → Fehler | `strptime` mit Fehlerbehandlung | `frontend/pages/register.py` |
+| Kein Sitzplatz ausgewählt → Fehler | UI-Prüfung vor Bestellung | `frontend/pages/checkout.py` |
+
+Beispiel aus `backend/services/bestellung_service.py`:
+```python
+if discount_type == Verguenstigungsart.KIND and film.altersfreigabe >= 16:
+    raise ValueError("Kindervergünstigung ist für Filme ab 16 nicht erlaubt.")
+
+if vorstellung.startzeit < datetime.utcnow():
+    raise ValueError("Buchung für vergangene Vorstellungen ist nicht möglich.")
+```
 
 ### 3. Datenbankverwaltung
 
-Alle relevanten Daten werden über ein ORM (SQLModel, basierend auf SQLAlchemy) verwaltet. Dazu gehören:
+Alle relevanten Daten werden über ein ORM (SQLModel, basierend auf SQLAlchemy) verwaltet. Die ORM-Modelle befinden sich in `backend/models/orm/`. Dazu gehören:
 - Filme, Vorstellungen und Sitzplätze
 - Kunden und Accounts (mit getrennter Authentifizierungstabelle)
 - Bestellungen und Tickets (inkl. Vergünstigungsart)
 - Snacks, Kategorien, Sprachen und Zahlungsarten
 - Bewertungen
+
+Beispiel aus `backend/models/orm/film_sql.py`:
+```python
+class Film(SQLModel, table=True):
+    film_id: UUID = Field(default_factory=uuid4, primary_key=True)
+    titel: str = Field(default="", index=True)
+    altersfreigabe: int = Field(default=0)
+    basispreis: Decimal = Field(sa_column=Column(Numeric(10, 2), nullable=False))
+
+    sprachen: list["Sprache"] = Relationship(back_populates="filme", link_model=FilmSprache)
+    vorstellungen: list["Vorstellung"] = Relationship(back_populates="film")
+```
 
 ---
 

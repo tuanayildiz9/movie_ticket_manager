@@ -1,7 +1,9 @@
+from pathlib import Path
 from sqlmodel import SQLModel, Session, create_engine
 from uuid import uuid4
 
-DATABASE_URL = "sqlite:///movie_ticket_manager.db"
+_DB_PATH = Path(__file__).resolve().parent.parent / "movie_ticket_manager.db"
+DATABASE_URL = f"sqlite:///{_DB_PATH}"
 
 engine = create_engine(DATABASE_URL, echo=False)
 

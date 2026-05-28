@@ -369,6 +369,10 @@ movie_ticket_manager/
 
 ---
 
+## Klassendiagramm
+<img width="1080" height="880" alt="class_diagram" src="https://github.com/user-attachments/assets/fc94ad8f-2171-4768-9033-6c3452c9f9bb" />
+
+
 ## How-to Programm starten
 
 ### Voraussetzungen

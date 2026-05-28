@@ -85,6 +85,7 @@ Im Movie Ticket Manager können Admins:
 ## Mockup
 <img width="526" height="355" alt="Mockup Anmeldung" src="https://github.com/user-attachments/assets/fcba528c-02b2-4ed5-917e-8b575f7ad637" />
 
+---
 
 ## Architektur
 <img width="3368" height="1724" alt="image" src="https://github.com/user-attachments/assets/be67a122-66b0-49b1-b1cb-4a5317c641ae" />

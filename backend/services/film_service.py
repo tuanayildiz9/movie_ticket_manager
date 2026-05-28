@@ -73,6 +73,15 @@ class FilmService:
     def get_film_details(self, film_id: UUID) -> Film | None:
         return self.film_repo.get_by_id(film_id)
 
+    def list_all_films(self) -> list[Film]:
+        return self.film_repo.list_all()
+
+    def get_vorstellung_by_id(self, vorstellung_id: UUID):
+        return self.film_repo.get_vorstellung_by_id(vorstellung_id)
+
+    def get_bewertungen_for_film(self, film_id: UUID):
+        return self.bewertung_repo.list_by_film(film_id)
+
     def rate_film(self, kunde_id: UUID, film_id: UUID, score: int, comment: str) -> Bewertung:
         if self.kunde_repo is not None and self.kunde_repo.get_by_id(kunde_id) is None:
             raise ValueError("Kunde wurde nicht gefunden.")

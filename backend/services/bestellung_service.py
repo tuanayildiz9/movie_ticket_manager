@@ -114,3 +114,15 @@ class BestellungService:
             }
             for seat in seats
         ]
+
+    def get_order_by_id(self, bestellung_id: UUID) -> Bestellung | None:
+        return self.bestellung_repo.get_by_id(bestellung_id)
+
+    def list_orders_by_kunde(self, kunde_id: UUID) -> list[Bestellung]:
+        return self.bestellung_repo.list_by_kunde(kunde_id)
+
+    def list_orders_by_film(self, film_id: UUID) -> list[Bestellung]:
+        return self.bestellung_repo.list_by_film(film_id)
+
+    def list_all_orders(self) -> list[Bestellung]:
+        return self.bestellung_repo.list_all()

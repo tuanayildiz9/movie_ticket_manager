@@ -24,8 +24,8 @@ def profil_page() -> None:
         ui.navigate.to("/")
         return
 
-    bestellungen = svc.bestellung_repo().list_by_kunde(kunde_id)
-    all_snacks = {s.snack_id: s for s in svc.snack_repo().list_all()}
+    bestellungen = svc.bestellung_service().list_orders_by_kunde(kunde_id)
+    all_snacks = {s.snack_id: s for s in svc.snack_service().list_all_snacks()}
 
     with ui.column().classes("w-full max-w-4xl mx-auto px-4 py-8"):
         ui.label("Mein Profil").classes("text-3xl font-bold text-white mb-6")
@@ -37,7 +37,7 @@ def profil_page() -> None:
                 _edit_profile_dialog(kunde, kunde_id)
 
             with ui.grid(columns=2).classes("w-full gap-4"):
-                account = svc.user_service().account_repo.get_by_id(kunde.account_id) if kunde.account_id else None
+                account = svc.user_service().get_account_by_id(kunde.account_id) if kunde.account_id else None
                 for label, value in [
                     ("Name", kunde.full_name()),
                     ("E-Mail", account.email if account else "–"),
@@ -61,7 +61,7 @@ def profil_page() -> None:
                     with ui.expansion(
                         f"Bestellung {str(best.bestellung_id)[:8].upper()} – "
                         f"CHF {best.total_betrag:.2f} – "
-                        f"{str(best.bestellungsdatum)[:10] if best.bestellungsdatum else '–'}"
+                        f"{best.bestellungsdatum.strftime('%d.%m.%Y') if best.bestellungsdatum else '–'}"
                     ).classes("bg-gray-700 rounded-xl mb-2 text-white"):
                         for ticket in best.tickets:
                             film = svc.film_service().get_film_details(ticket.film_id)

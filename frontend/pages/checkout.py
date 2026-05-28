@@ -58,7 +58,7 @@ def checkout_page(request: Request, vorstellung_id: str) -> None:
     if getattr(vorstellung, "startzeit", None) is not None:
         is_past = vorstellung.startzeit < datetime.utcnow()
 
-    all_snacks = svc.snack_repo().list_all()
+    all_snacks = svc.snack_service().list_all_snacks()
 
     # Alle Sitze + welche davon noch frei sind
     all_seats = svc.get_all_seats_for_vorstellung(vid)
@@ -359,12 +359,12 @@ def bestellung_confirm_page(bestellung_id: str) -> None:
         ui.navigate.to("/")
         return
 
-    bestellung = svc.bestellung_repo().get_by_id(bid)
+    bestellung = svc.bestellung_service().get_order_by_id(bid)
     if bestellung is None:
         ui.navigate.to("/")
         return
 
-    all_snacks = {s.snack_id: s for s in svc.snack_repo().list_all()}
+    all_snacks = {s.snack_id: s for s in svc.snack_service().list_all_snacks()}
 
     film_vorstellung_map: dict = {}
     sitzplatz_map: dict = {}

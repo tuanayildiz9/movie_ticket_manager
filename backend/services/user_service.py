@@ -63,6 +63,9 @@ class UserService:
     def get_profile_by_account_id(self, account_id: UUID) -> Kunde | None:
         return self.kunde_repo.get_by_account_id(account_id)
 
+    def get_account_by_id(self, account_id: UUID) -> Account | None:
+        return self.account_repo.get_by_id(account_id)
+
     def update_profile(self, kunde_id: UUID, data: dict[str, object]) -> Kunde:
         kunde = self.kunde_repo.get_by_id(kunde_id)
         if kunde is None:

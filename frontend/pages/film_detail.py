@@ -53,7 +53,7 @@ def film_detail_page(film_id: str) -> None:
     avg_rating = svc.film_service().get_average_rating(fid)
     kat_names = svc.get_kategorie_names(film.kategorie_ids)
     spr_names = svc.get_sprache_names(film.sprache_ids)
-    bewertungen = svc.film_service().bewertung_repo.list_by_film(fid)
+    bewertungen = svc.film_service().get_bewertungen_for_film(fid)
 
     with ui.column().classes("w-full max-w-5xl mx-auto px-4 py-8"):
         # Back link

@@ -1,24 +1,16 @@
 from uuid import UUID
 
-from sqlmodel import Session, select
-
-from backend.models.orm.kategorie_sql import Kategorie as KategorieORM
-from backend.models.orm.sitzplatz_sql import Sitzplatz as SitzplatzORM
-from backend.models.orm.sprache_sql import Sprache as SpracheORM
-from backend.models.orm.zahlungsart_sql import Zahlungsart as ZahlungsartORM
-from config.database import engine
-
 _svc: dict = {}
 
 
-def init_services(user_service, film_service, bestellung_service, admin_service, snack_repo, bestellung_repo) -> None:
+def init_services(user_service, film_service, bestellung_service, admin_service, lookup_service, snack_service) -> None:
     _svc.update({
         "user": user_service,
         "film": film_service,
         "bestellung": bestellung_service,
         "admin": admin_service,
-        "snack_repo": snack_repo,
-        "bestellung_repo": bestellung_repo,
+        "lookup": lookup_service,
+        "snack": snack_service,
     })
 
 
@@ -38,106 +30,49 @@ def admin_service():
     return _svc["admin"]
 
 
-def snack_repo():
-    return _svc["snack_repo"]
+def lookup_service():
+    return _svc["lookup"]
 
 
-def bestellung_repo():
-    return _svc["bestellung_repo"]
+def snack_service():
+    return _svc["snack"]
 
 
 def get_all_kategorien() -> list[dict]:
-    with Session(engine) as session:
-        rows = session.exec(select(KategorieORM)).all()
-        return [{"id": row.kategorie_id, "name": row.name} for row in rows]
+    return lookup_service().list_categories()
 
 
 def get_all_sprachen() -> list[dict]:
-    with Session(engine) as session:
-        rows = session.exec(select(SpracheORM)).all()
-        return [{"id": row.sprache_id, "name": row.name} for row in rows]
+    return lookup_service().list_languages()
 
 
 def get_all_zahlungsarten() -> list[dict]:
-    with Session(engine) as session:
-        rows = session.exec(select(ZahlungsartORM)).all()
-        return [{"id": row.zahlungsart_id, "name": row.name} for row in rows]
+    return lookup_service().list_payment_methods()
 
 
 def get_kategorie_names(ids: list[UUID]) -> list[str]:
-    if not ids:
-        return []
-    with Session(engine) as session:
-        names = []
-        for uid in ids:
-            row = session.get(KategorieORM, uid)
-            if row:
-                names.append(row.name)
-        return names
+    return lookup_service().get_category_names(ids)
 
 
 def get_all_seats_for_vorstellung(vorstellung_id: UUID) -> list[dict]:
-    """Alle Sitze einer Vorstellung – inkl. bereits belegter (für Saalplan)."""
-    with Session(engine) as session:
-        rows = session.exec(
-            select(SitzplatzORM).where(SitzplatzORM.vorstellung_id == vorstellung_id)
-        ).all()
-        return [
-            {
-                "sitzplatz_id": row.sitzplatz_id,
-                "sitz_label": row.sitz_label,
-                "sektor": row.sektor,
-                "besetzt": row.besetzt,
-            }
-            for row in rows
-        ]
+    return lookup_service().get_all_seats_for_vorstellung(vorstellung_id)
 
 
 def get_vorstellungen_in_saal_ort(saal: str, ort: str) -> list[dict]:
-    """Return existing Vorstellungen for a given `saal` and `ort`."""
-    from backend.models.orm.vorstellung_sql import Vorstellung as VorstellungORM
-
-    with Session(engine) as session:
-        rows = session.exec(select(VorstellungORM).where(VorstellungORM.saal == saal, VorstellungORM.ort == ort)).all()
-        return [
-            {"vorstellung_id": row.vorstellung_id, "startzeit": row.startzeit, "endzeit": row.endzeit}
-            for row in rows
-        ]
+    return lookup_service().get_vorstellungen_in_saal_ort(saal, ort)
 
 
 def get_existing_saele() -> list[str]:
-    """Return known hall names from existing showtimes."""
-    from backend.models.orm.vorstellung_sql import Vorstellung as VorstellungORM
-
-    with Session(engine) as session:
-        rows = session.exec(select(VorstellungORM.saal).distinct().order_by(VorstellungORM.saal)).all()
-        return [row for row in rows if row]
+    return lookup_service().get_existing_saele()
 
 
 def get_existing_orte() -> list[str]:
-    """Return known locations from existing showtimes."""
-    from backend.models.orm.vorstellung_sql import Vorstellung as VorstellungORM
-
-    with Session(engine) as session:
-        rows = session.exec(select(VorstellungORM.ort).distinct().order_by(VorstellungORM.ort)).all()
-        return [row for row in rows if row]
+    return lookup_service().get_existing_orte()
 
 
 def get_sitzplatz_info(sitzplatz_id: UUID) -> dict | None:
-    with Session(engine) as session:
-        row = session.get(SitzplatzORM, sitzplatz_id)
-        if row:
-            return {"sitz_label": row.sitz_label, "sektor": row.sektor}
-    return None
+    return lookup_service().get_sitzplatz_info(sitzplatz_id)
 
 
 def get_sprache_names(ids: list[UUID]) -> list[str]:
-    if not ids:
-        return []
-    with Session(engine) as session:
-        names = []
-        for uid in ids:
-            row = session.get(SpracheORM, uid)
-            if row:
-                names.append(row.name)
-        return names
+    return lookup_service().get_language_names(ids)

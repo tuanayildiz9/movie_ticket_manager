@@ -79,7 +79,7 @@ def _filme_tab(account_id: UUID | None) -> None:
 
     def reload_table() -> None:
         table_container.clear()
-        all_films = svc.film_service().film_repo.list_all()
+        all_films = svc.film_service().list_all_films()
         with table_container:
             columns = [
                 {"name": "titel", "label": "Titel", "field": "titel", "align": "left", "sortable": True},
@@ -140,7 +140,7 @@ def _filme_tab(account_id: UUID | None) -> None:
 def _vorstellungen_tab(account_id: UUID | None) -> None:
     ui.label("Vorstellungsverwaltung").classes("text-xl font-bold text-white mb-4")
 
-    all_films = svc.film_service().film_repo.list_all()
+    all_films = svc.film_service().list_all_films()
     film_options = {str(f.film_id): f.titel for f in all_films}
     selected_film: dict[str, UUID | None] = {"id": None}
 
@@ -202,7 +202,7 @@ def _umsatz_tab() -> None:
 
     # ── Gesamtübersicht ───────────────────────────────────────────────────────
     try:
-        all_orders = svc.bestellung_repo().list_all()
+        all_orders = svc.bestellung_service().list_all_orders()
         total_umsatz = sum(o.total_betrag for o in all_orders)
         total_tickets = sum(o.anzahl_tickets for o in all_orders)
         total_orders = len(all_orders)
@@ -225,10 +225,10 @@ def _umsatz_tab() -> None:
     # ── Umsatz pro Film ───────────────────────────────────────────────────────
     ui.label("Umsatz pro Film").classes("text-lg font-bold text-white mb-3")
     try:
-        all_films = svc.film_service().film_repo.list_all()
+        all_films = svc.film_service().list_all_films()
         film_rows = []
         for f in all_films:
-            orders_for_film = svc.bestellung_repo().list_by_film(f.film_id)
+            orders_for_film = svc.bestellung_service().list_orders_by_film(f.film_id)
             tickets_sold = sum(len(o.tickets) for o in orders_for_film)
             umsatz_film = sum(
                 sum(t.preis for t in o.tickets if t.film_id == f.film_id)
@@ -261,7 +261,7 @@ def _umsatz_tab() -> None:
     # ── Detail pro Film (aufklappbar) ─────────────────────────────────────────
     ui.label("Detail-Ansicht pro Film").classes("text-lg font-bold text-white mb-3")
 
-    all_films_detail = svc.film_service().film_repo.list_all()
+    all_films_detail = svc.film_service().list_all_films()
     film_options = {str(f.film_id): f.titel for f in all_films_detail}
 
     film_sel = (
@@ -321,6 +321,8 @@ def _umsatz_tab() -> None:
 def _create_film_dialog(account_id: UUID | None, on_done) -> None:
     kategorien = svc.get_all_kategorien()
     sprachen = svc.get_all_sprachen()
+    kat_id_map = {item["name"]: item["id"] for item in kategorien}
+    spr_id_map = {item["name"]: item["id"] for item in sprachen}
 
     with ui.dialog() as dialog, ui.card().classes("bg-gray-800 min-w-[500px] max-w-2xl"):
         ui.label("Neuen Film erstellen").classes("text-xl font-bold text-amber-400 mb-4")
@@ -365,26 +367,10 @@ def _create_film_dialog(account_id: UUID | None, on_done) -> None:
         err = ui.label("").classes("text-red-400 text-sm mt-2")
 
         def create() -> None:
-            from datetime import date as date_type
-            from sqlmodel import Session, select as sql_select  # noqa: F401
-            from backend.models.orm.kategorie_sql import Kategorie as KatORM
-            from backend.models.orm.sprache_sql import Sprache as SprORM
-            from config.database import engine
-
             try:
-                erschein = datum_in.value or date_type.today()
-
-                with Session(engine) as session:
-                    kat_ids = [
-                        session.exec(sql_select(KatORM).where(KatORM.name == n)).first().kategorie_id
-                        for n in (kat_sel.value or [])
-                        if session.exec(sql_select(KatORM).where(KatORM.name == n)).first()
-                    ]
-                    spr_ids = [
-                        session.exec(sql_select(SprORM).where(SprORM.name == n)).first().sprache_id
-                        for n in (spr_sel.value or [])
-                        if session.exec(sql_select(SprORM).where(SprORM.name == n)).first()
-                    ]
+                erschein = datum_in.value or date.today()
+                kat_ids = [kat_id_map[n] for n in (kat_sel.value or []) if n in kat_id_map]
+                spr_ids = [spr_id_map[n] for n in (spr_sel.value or []) if n in spr_id_map]
 
                 film = Film(
                     titel=titel_in.value.strip(),
@@ -583,7 +569,7 @@ def _create_vorstellung_dialog(film_id: UUID, account_id: UUID | None, on_done) 
 
 
 def _edit_vorstellung_dialog(vorstellung_id: UUID, account_id: UUID | None, on_done) -> None:
-    v = svc.film_service().film_repo.get_vorstellung_by_id(vorstellung_id)
+    v = svc.film_service().get_vorstellung_by_id(vorstellung_id)
     if not v:
         ui.notify("Vorstellung nicht gefunden.", color="negative")
         return

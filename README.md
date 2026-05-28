@@ -50,7 +50,7 @@ Im Movie Ticket Manager können Admins:
 ---
 
 ## Use Cases
-<img width="643" height="435" alt="Use Case Diagramm" src="https://github.com/user-attachments/assets/5958e561-c00d-49e7-a794-15203bd5d558" />
+![Use Case Diagramm](docs/use_case_diagram.png)
 
 
 ### Main Use Cases

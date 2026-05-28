@@ -158,6 +158,68 @@ Im Movie Ticket Manager können Admins:
 
 ---
 
+## ✅ Projektanforderungen
+
+Jede App muss folgende Kriterien erfüllen, um akzeptiert zu werden:
+
+1. Browserbasierte App mit NiceGUI
+2. Datenvalidierung in der App
+3. Verwendung eines ORM für die Datenbankverwaltung
+
+### 1. Browserbasierte App (NiceGUI)
+
+Die Anwendung interagiert vollständig über den Browser. NiceGUI stellt die gesamte Benutzeroberfläche als Webanwendung bereit – inklusive:
+- Filmübersicht mit Filter- und Sortierfunktionen
+- Interaktiver Sitzplan für die Sitzplatzauswahl
+- Checkout-Prozess mit Vergünstigungs- und Snack-Auswahl
+- Bestellübersicht nach dem Kauf
+- Admin-Panel für Film- und Vorstellungsverwaltung
+
+**Architektur-Hinweis:** Der Browser ist ein dünner Client; UI-State und Businesslogik laufen serverseitig in der NiceGUI-App.
+
+### 2. Datenvalidierung
+
+Die Anwendung validiert alle Benutzereingaben, um Datenintegrität und eine fehlerfreie Nutzererfahrung sicherzustellen:
+- **Registrierung:** E-Mail, Vorname und Nachname sind Pflichtfelder; doppelte E-Mails werden verhindert
+- **Alterscheck:** Kindervergünstigung wird für Filme mit Altersfreigabe ≥ 16 blockiert
+- **Sitzplatzbuchung:** Bereits belegte Sitzplätze können nicht erneut reserviert werden
+- **Buchungszeitpunkt:** Buchungen für vergangene Vorstellungen werden abgelehnt
+- **Bewertung:** Sternebewertung wird auf den Bereich 1–5 eingeschränkt
+- **Vorstellungsverwaltung (Admin):** Überschneidungen bei Vorstellungen im gleichen Saal werden verhindert
+
+### 3. Datenbankverwaltung
+
+Alle relevanten Daten werden über ein ORM (SQLModel, basierend auf SQLAlchemy) verwaltet. Dazu gehören:
+- Filme, Vorstellungen und Sitzplätze
+- Kunden und Accounts (mit getrennter Authentifizierungstabelle)
+- Bestellungen und Tickets (inkl. Vergünstigungsart)
+- Snacks, Kategorien, Sprachen und Zahlungsarten
+- Bewertungen
+
+---
+
+## ⚙️ Implementation
+
+### Technologie
+
+- Python 3.11+
+- NiceGUI
+- SQLModel / SQLAlchemy
+- ReportLab
+- pytest
+
+### Verwendete Libraries
+
+| Library | Zweck |
+|---|---|
+| **nicegui** | Web-UI-Framework (browserbasierte Oberfläche) |
+| **sqlmodel** | ORM und Datenbankzugriff (basiert auf SQLAlchemy + Pydantic) |
+| **sqlalchemy** | Datenbank-Toolkit (Engine, Sessions, Migrations) |
+| **reportlab** | PDF-Ticket-Generierung |
+| **pytest** | Testing |
+
+---
+
 ## Datentypen
 | Feldname | Beschreibung | Datentyp | Pflichtfeld | Beispiel |
 |---|---|---|---|---|
@@ -193,6 +255,12 @@ movie_ticket_manager/
 │
 ├── main.py                          # Einstiegspunkt – startet die NiceGUI-App
 ├── requirements.txt                 # Python-Abhängigkeiten
+│
+├── tests/                           # Automatisierte Tests (pytest)
+│   ├── conftest.py                  # Fixtures (In-Memory-DB, Testdaten)
+│   ├── test_unit.py                 # 6 Unit Tests (Ticket-Preise, Bestellungstotal)
+│   ├── test_db.py                   # 3 Datenbanktests (Repositories)
+│   └── test_integration.py          # 3 Integrationstests (BestellungService)
 │
 ├── config/
 │   └── database.py                  # Datenbankverbindung (SQLite) & Engine-Setup
@@ -337,8 +405,9 @@ NiceGUI ready to go on http://localhost:8080
 
 ### Testmischung
 - Insgesamt **12** Tests
-- Insgesamt **3** Datenbanktests
-- Insgesamt **3** Integrationstests
+- Insgesamt **6** Unit Tests: z.B. Ticketpreis regulär, Studentenrabatt, Seniorenrabatt, Kinderrabatt, Mindestpreis 0 CHF, Bestellungstotal
+- Insgesamt **3** Datenbanktests: z.B. Filmabfrage mit geseedeten Daten, Bestellung mit Tickets speichern, leere Datenbank
+- Insgesamt **3** Integrationstests: z.B. Bestellung mit einem Ticket, Studentenrabatt bei Bestellung, Kinderrabatt bei FSK-16-Film blockiert
 
 Tests ausführen:
 ```bash
@@ -503,10 +572,20 @@ python -m pytest tests/ -v
 | **Status** | Bestanden |
 | **Kommentare** | Geschäftsregel korrekt durchgesetzt |
 
+---
+
 ## Teammitglieder und Arbeitsaufteilung
 | Name | Arbeitsaufteilung |
 |---|---|
 | Tuana Yildiz | Datenbank, Backend |
 | Danijela Djukic | Readme, Backend |
 | Medina Senderovic | Frontend, Backend |
-  
+
+---
+
+## Lizenz
+
+Dieses Projekt wurde für **Bildungszwecke** erstellt im Rahmen des Moduls Advanced Programming.
+
+[MIT License](LICENSE)
+

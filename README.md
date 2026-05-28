@@ -132,14 +132,10 @@ Im Movie Ticket Manager können Admins:
 - Jede Bewertung wird von genau einem Kunden erstellt.
 - Ein Film kann mehrere Bewertungen haben.
 - Jede Bewertung gehört genau zu einem Film.
-- Ein Film hat eine Sprache.
+- Ein Film kann mehrere Sprachen haben (via FilmSprache).
 - Eine Sprache kann mehreren Filmen zugeordnet sein.
-- Ein Film gehört zu einer Kategorie.
+- Ein Film kann mehrere Kategorien haben (via FilmKategorie).
 - Eine Kategorie kann mehrere Filme enthalten.
-- Ein Admin-Account kann mehrere Filme verwalten.
-- Ein Film kann von einem Admin-Account verwaltet werden.
-- Ein Admin-Account kann mehrere Vorstellungen verwalten.
-- Eine Vorstellung wird von einem Admin-Account verwaltet.
 - Eine Vorstellung hat mehrere Sitzplätze.
 - Ein Sitzplatz gehört zu genau einer Vorstellung.
 - Ein Kunde wählt eine Zahlungsart.
@@ -148,12 +144,14 @@ Im Movie Ticket Manager können Admins:
 - Jede Bestellung gehört genau zu einem Kunden.
 - Eine Bestellung beinhaltet mehrere Tickets.
 - Ein Ticket gehört genau zu einer Bestellung.
-- Ein Ticket kann mehrere Snacks beinhalten.
+- Ein Ticket kann mehrere Snacks beinhalten (via TicketSnack).
 - Ein Snack kann in mehreren Tickets enthalten sein.
 - Eine Vorstellung kann mehrere Tickets haben.
 - Jedes Ticket gehört zu genau einer Vorstellung.
 - Ein Film kann mehrere Vorstellungen haben.
 - Eine Vorstellung zeigt genau einen Film.
+- Ein Kunde kann einen Account haben.
+- Ein Account gehört genau zu einem Kunden.
 
 
 ---
@@ -223,12 +221,12 @@ Alle relevanten Daten werden über ein ORM (SQLModel, basierend auf SQLAlchemy) 
 ## Datentypen
 | Feldname | Beschreibung | Datentyp | Pflichtfeld | Beispiel |
 |---|---|---|---|---|
-| Ticket-ID | Eindeutige ID eines Tickets, die zur eindeutigen Zuordnung und Verwaltung im System dient | Int | Ja | 12345678 |
-| Kunden-ID | Durch das Anlegen des Kundenkontos wird die Kundennummer generiert | Int | Ja | 9876 |
-| Film-ID | Eindeutige ID eines Films zur Verwaltung im System | Int | Ja | 1 |
+| Ticket-ID | Eindeutige ID eines Tickets, die zur eindeutigen Zuordnung und Verwaltung im System dient | UUID | Ja | 3f2a1b4c-... |
+| Kunden-ID | Durch das Anlegen des Kundenkontos wird die Kundennummer generiert | UUID | Ja | 7e8d9f0a-... |
+| Film-ID | Eindeutige ID eines Films zur Verwaltung im System | UUID | Ja | 1c2d3e4f-... |
 | Sitzplatz | Bezeichnung des Sitzplatzes im Kinosaal (Reihe + Platznummer) zur Auswahl und Reservierung | String | Ja | A09 |
-| Preis | Ticketpreis, den der Kunde bezahlt | Float | Ja | 15.90 |
-| Vorstellungs-ID | Eindeutige ID einer Filmvorstellung (Datum, Uhrzeit, Saal) zur Verwaltung im System | Int | Ja | 111 |
+| Preis | Ticketpreis, den der Kunde bezahlt | Decimal | Ja | 15.90 |
+| Vorstellungs-ID | Eindeutige ID einer Filmvorstellung (Datum, Uhrzeit, Saal) zur Verwaltung im System | UUID | Ja | 5a6b7c8d-... |
 | Bewertung | Sternebewertung eines Films durch den Kunden | Int | Nein | 4 |
 | Rabatt-Typ | Art des gewählten Rabatts beim Ticketkauf | String | Nein | Student |
 | Snack | Bezeichnung des gewählten Snacks zum Ticket | String | Nein | Popcorn |

@@ -10,12 +10,11 @@ Im Movie Ticket Manager können die Kunden:
 - mehrere Tickets kaufen (inkl. Sitzplatzauswahl und Rabatten)
 - das Filmangebot filtern (z.B. Sprache, Altersfreigabe)
 - Filme bewerten
-- Filme in ihrer persönlichen Liste speichern
 
 Im Movie Ticket Manager können Admins:
 - Filme hinzufügen, bearbeiten und löschen
 - Vorstellungen mit Datum, Uhrzeit und Saal verwalten
-- einsehen, wie viele Tickets pro Film verkauft wurden und welche Sitzplätze belegt sind
+- Einsehen, wie viele Tickets pro Film verkauft wurden
 
 ---
 
@@ -56,7 +55,7 @@ Im Movie Ticket Manager können Admins:
 ### Main Use Cases
 **Kunde**
 - Filme anzeigen
-- Filme filtern und sortieren (z. B. nach Kategorie, Sprache, Altersfreigabe)
+- Filme filtern und sortieren (z. B. nach Kategorie, Sprache)
 - Konto anlegen
 - Einloggen / Ausloggen
 - Tickets kaufen
@@ -66,7 +65,6 @@ Im Movie Ticket Manager können Admins:
 - Snacks zum Ticket hinzufügen
 - Bestellübersicht anzeigen
 - Filme bewerten
-- Filme zur persönlichen Liste hinzufügen
 
 **Admin**
 - Einloggen / Ausloggen
@@ -75,72 +73,11 @@ Im Movie Ticket Manager können Admins:
 - Filme löschen
 - Informationen zum Film verwalten (Datum, Uhrzeit, Saal)
 - Ticketverkäufe / Verfügbarkeit einsehen (z. B. Anzahl pro Film)
-- Übersicht über gebuchte Plätze anzeigen
+- Übersicht über gebuchte Filme anzeigen
 
 ### Rollen
-- Kunden (Nutzt die Anwendung zum Suchen, Bewerten und Kaufen von Filmen)
+- Kunden (Nutzt die Anwendung zum Suchen, Bewerten und Kaufen von Filmtickets)
 - Admin (Mitarbeitende Kino; Verwaltet Inhalte und überwacht das System)
-
----
-
-## Funktionsübersicht
-Die Anwendung bietet folgende Funktionen:
-**Filme anzeigen**
-- Titel
-- Beschreibung
-- Altersfreigabe
-- Coverbild
-- Hauptdarsteller
-- Erscheinungsjahr / Datum
-- Kategorie (Comedy, Romance, Sci-Fi, Fantasy)
-- Sprache (In welcher Sprache der Film im Kino verfügbar ist)
-
-**Kundenkonto anlegen**
-- Vorname
-- Nachname
-- Adresse
-- PLZ
-- Geburtsdatum
-- Alter (wird vom Geburtsdatum berechnet, der Kunde muss nur sein Geburtsdatum eingeben beim Anlegen eines Kontos)
-- Telefonnummer
-- E-Mail
-- Passwort
-- Zahlungsart (Karte, Rechnung, TWINT)
-
-**Kunden können Tickets kaufen**
-- Es können mehrere Tickets gekauft werden
-- Es gibt Senioren-, Studenten- und Kindervergünstigung
-- Zu den Tickets können Snacks mitgebucht werden
-
-**Sitzplatz**
-- Einteilung in Sektor A, B und C (alternativ: Direkteingabe wie „21C", falls kein visueller Sitzplan vorhanden)
-- Verfügbare Sitzplätze werden dem Kunden visuell angezeigt (z. B. als interaktiver Sitzplan oder Dropdown-Menü)
-- Sitzplatzverfügbarkeit wird im System gespeichert und in Echtzeit aktualisiert
-- Beim Ticketkauf wird jedem Kunden ein Sitzplatz fest zugeteilt und als belegt markiert
-
-**Bewertungen**
-- Kunden können einen Film nach dem Kauf eines Tickets bewerten (Sternebewertung 1–5 oder Kommentar)
-
-**Persönliche Filmliste**
-- Kunden können Filme in ihrer persönlichen Merkliste speichern
-
-**Filmsuche und Filter**
-- Kunden können das Filmangebot nach Sprache, Kategorie und Altersfreigabe filtern
-
-**Bestellübersicht**
-
-Nach jedem Ticketkauf erhält der Kunde automatisch eine Bestellübersicht mit folgenden Informationen:
-- Filmtitel
-- Saal und Sitzplatz
-- Ort
-- Datum und Uhrzeit
-- Anzahl der gekauften Tickets
-- Gesamtpreis
-
-**Admin-Funktionen**
-- Admins können Filme hinzufügen, bearbeiten und löschen
-- Admins können Vorstellungen mit Datum, Uhrzeit und Saal verwalten
-- Admins können einsehen, wie viele Tickets pro Film verkauft wurden und welche Sitzplätze belegt sind
 
 ---
 

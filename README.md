@@ -3,6 +3,21 @@ Für unser objektorientiertes Programmierprojekt haben wir uns für einen Movie 
 
 Die Anwendung richtet sich sowohl an Kinobesucher (Kunden) als auch an Mitarbeitende des Kinos (Admin). Sie wird als browserbasierte Webanwendung mit Frontend, Backend und Datenbank umgesetzt.
 
+Das Projekt verfolgt folgende Ziele:
+- Den vollständigen Prozess von der **Anforderungsanalyse bis zur Implementierung** abzudecken
+- Fortgeschrittene **Python**-Konzepte in einer webbasierten Anwendung anzuwenden
+- **Datenvalidierung**, Schichtenarchitektur und ORM-Nutzung zu demonstrieren
+- Sauberen, wartbaren und gut getesteten Code zu produzieren
+- **Teamarbeit und professionelle Dokumentation** zu fördern
+
+---
+
+## Problembeschreibung
+
+In vielen Kinos müssen Tickets noch persönlich an der Kasse gekauft werden. Dies führt zu langen Warteschlangen, Zeitverlust für Kunden und unnötiger Belastung des Personals. Falsche Preisberechnungen bei Rabatten (Student, Senior, Kind) entstehen durch manuelle Prozesse und sind fehleranfällig.
+
+---
+
 ### Szenario
 Im Movie Ticket Manager können die Kunden:
 - aktuelle Filme einsehen
@@ -98,12 +113,9 @@ Im Movie Ticket Manager können Admins:
 - Mittels MVC hat man eine klare Struktur und Gliederung der drei Schichten
 
 ### Verwendete Designmuster
-- Das Frontend kommuniziert ausschließlich mit den Service-Klassen und greift nicht direkt auf die Datenbank bzw. die Repository-Schicht zu. Dadurch bleibt die Anwendung klar strukturiert und die Verantwortlichkeiten sind sauber getrennt.
-- Die Service-Klassen enthalten die gesamte Businesslogik der Anwendung. Sie verarbeiten Anfragen aus dem Frontend, führen Validierungen durch und koordinieren den Zugriff auf die Daten.
-- Im Frontend ist die gesamte Benutzerinteraktion implementiert. Dazu gehören die Darstellung der Benutzeroberfläche, Eingaben der Benutzer sowie die Kommunikation mit dem Backend.
-- Die Service-Schicht verwendet die Repository-Klassen für den Zugriff auf die Datenbank.
-- Die Repository-Klassen kapseln sämtliche Datenbankoperationen (CRUD – Create, Read, Update, Delete). Dadurch bleibt der Datenzugriff zentral verwaltet und unabhängig von der Businesslogik.
-- Die Model-Klassen definieren die ORM-Modelle und bilden die Struktur der Datenbanktabellen ab. Sie repräsentieren die zentralen Datenobjekte der Anwendung.
+- **Model-View-Controller (MVC) / Layered MVC Variant:** MVC eignet sich hier, weil die Anwendung eine grafische Benutzeroberfläche, Benutzerinteraktionen, Geschäftsobjekte und Datenbankzugriff hat. In unserem Fall übernehmen die Service-Klassen die Rolle des Controllers. Das Frontend kommuniziert ausschließlich mit den Services und greift nie direkt auf die Datenbank zu. Diese Trennung macht das Projekt leichter verständlich, testbar und erweiterbar.
+- **Repository Pattern:** Das Repository Pattern macht hier Sinn, weil der Datenbankzugriff (CRUD-Operationen) vollständig in eigenen Repository-Klassen gekapselt ist. Die restliche Anwendung muss nicht wissen, wie Daten gespeichert oder abgefragt werden. Dies hält die Businesslogik sauber und unabhängig von der Persistenzschicht.
+- **Facade Pattern:** Die Service-Schicht fungiert als Fassade: Sie verbirgt die Komplexität des Zusammenspiels von Repositories, Modellen und Validierungslogik hinter einer einfachen Schnittstelle. Das Frontend muss nur die Service-Methoden aufrufen und erhält fertig verarbeitete Ergebnisse zurück.
 
 ---
 
